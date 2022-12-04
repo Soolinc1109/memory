@@ -97,7 +97,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                           child: CircleAvatar(
                                             radius: 22,
                                             foregroundImage: NetworkImage(
-                                                userAccount.imagepath),
+                                                userAccount.imagepath!),
                                           ),
                                         ),
                                         Expanded(
@@ -113,7 +113,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        Text(userAccount.name,
+                                                        Text(userAccount.name!,
                                                             style: TextStyle(
                                                                 fontSize: 18,
                                                                 fontWeight:
@@ -127,7 +127,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                                             .toDate()))
                                                   ],
                                                 ),
-                                                Text(userAccount.userId),
+                                                Text(userAccount.userId!),
                                                 Container(
                                                   decoration: BoxDecoration(
                                                     image: DecorationImage(

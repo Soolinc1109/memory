@@ -14,7 +14,6 @@ import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/userpost.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/account/book_list.dart';
 import 'package:memorys/view/account/edit_account_page.dart';
 import 'package:memorys/view/account/follwing_page.dart';
 import 'package:memorys/view/account/other_account.dart';
@@ -94,7 +93,7 @@ class _AccountPageState extends State<AccountPage> {
               .get();
           await UserFirestore.removeUser(
             removeAccountDocument.docs[0].id,
-            myAccount.id,
+            myAccount.id!,
           );
 
           widget.isFollwing = false;
@@ -107,7 +106,7 @@ class _AccountPageState extends State<AccountPage> {
         onPressed = () async {
           await UserFirestore.followUser(
             widget.userInfo!,
-            myAccount.id,
+            myAccount.id!,
           );
           widget.isFollwing = true;
           //画面のリロード　→ setstate
@@ -148,7 +147,7 @@ class _AccountPageState extends State<AccountPage> {
           iconTheme: IconThemeData(color: Colors.black, size: 30),
           backgroundColor: Colors.white,
           title: Text(
-            myAccount.userId,
+            myAccount.userId!,
             style: TextStyle(
                 color: Color.fromARGB(255, 0, 0, 0),
                 fontSize: 25,
@@ -178,9 +177,9 @@ class _AccountPageState extends State<AccountPage> {
                                   CircleAvatar(
                                       radius: 41,
                                       foregroundImage: widget.userInfo == null
-                                          ? NetworkImage(myAccount.imagepath)
+                                          ? NetworkImage(myAccount.imagepath!)
                                           : NetworkImage(
-                                              widget.userInfo!.imagepath)),
+                                              widget.userInfo!.imagepath!)),
                                   SizedBox(
                                     width: 50,
                                   ),
@@ -270,14 +269,14 @@ class _AccountPageState extends State<AccountPage> {
                           widget.userInfo == null
                               ? Text(
                                   //ステイトフルウィジェットのクラスをステイトのクラスで使おうとするときにwidget.が必要！
-                                  myAccount.name,
+                                  myAccount.name!,
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
                                 )
                               : Text(
                                   //ステイトフルウィジェットのクラスをステイトのクラスで使おうとするときにwidget.が必要！
-                                  widget.userInfo!.name,
+                                  widget.userInfo!.name!,
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
@@ -286,8 +285,8 @@ class _AccountPageState extends State<AccountPage> {
                             height: 5,
                           ),
                           widget.userInfo == null
-                              ? Text(myAccount.selfIntroduction)
-                              : Text(widget.userInfo!.selfIntroduction),
+                              ? Text(myAccount.selfIntroduction!)
+                              : Text(widget.userInfo!.selfIntroduction!),
                           SizedBox(
                               width: double.infinity, child: createButton())
                         ],
@@ -336,7 +335,6 @@ class _AccountPageState extends State<AccountPage> {
                               .orderBy('created_time', descending: true)
                               .snapshots(),
                           builder: (context, snapshot) {
-                            print('=========================');
                             if (snapshot.hasData) {
                               List<String> myPostIds = List.generate(
                                   snapshot.data!.docs.length, (index) {
@@ -360,7 +358,7 @@ class _AccountPageState extends State<AccountPage> {
                                           itemBuilder: (context, index) {
                                             UserPost post =
                                                 snapshot.data![index];
-                                            print(post.Image);
+
                                             return Container(
                                               child: Row(
                                                 children: [
@@ -418,7 +416,7 @@ class _AccountPageState extends State<AccountPage> {
                           });
                           return FutureBuilder<Map<String, Account>?>(
                               future:
-                                  UserFirestore.getPostUserMap(postAccountIds),
+                                  UserFirestore.getPostUserMap(myAccount.id!,postAccountIds),
                               builder: (context, userSnapshot) {
                                 if (userSnapshot.hasData &&
                                     userSnapshot.connectionState ==
@@ -720,7 +718,7 @@ class _AccountPageState extends State<AccountPage> {
                                                             foregroundImage:
                                                                 NetworkImage(
                                                                     myAccount
-                                                                        .imagepath),
+                                                                        .imagepath!),
                                                           ),
                                                         ),
                                                         Expanded(
@@ -739,7 +737,7 @@ class _AccountPageState extends State<AccountPage> {
                                                                       children: [
                                                                         Text(
                                                                           myAccount
-                                                                              .name,
+                                                                              .name!,
                                                                           style:
                                                                               TextStyle(
                                                                             fontFamily:

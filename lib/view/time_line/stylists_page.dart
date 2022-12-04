@@ -10,10 +10,12 @@ import 'package:memorys/model/userpost.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/shops.dart';
+import 'package:memorys/utils/firestore/stylists.dart';
 import 'package:memorys/utils/firestore/userpost.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/time_line/post_page.dart';
 import 'package:memorys/view/time_line/stylist_account_page.dart';
+import 'package:memorys/view/time_line/talk_room.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class StylistsPage extends StatefulWidget {
@@ -93,48 +95,41 @@ class _StylistsPageState extends State<StylistsPage> {
                     if (postSnapshot.hasData) {
                       return FutureBuilder<Map<String, Account>?>(
                           future: UserFirestore.getPostUserMap(
-                              ShopFirestore.shopList[0].staff),
+                              myAccount.id!, ShopFirestore.shopList[0].staff),
                           builder: (context, userSnapshot) {
                             if (userSnapshot.hasData &&
                                 userSnapshot.connectionState ==
                                     ConnectionState.done) {
-                              print('=========s================');
-                              print(userSnapshot.data);
-                              // List<String> postUserId = [];
-                              // userSnapshot.data!.docs.forEach((doc) {
-                              //   Map<String, dynamic> data =
-                              //       doc.data() as Map<String, dynamic>;
-                              //   postUserId.add(doc.id);
-                              //   postUserId.remove(myAccount.id);
-                              // });
-
+                              print(userSnapshot.data); //2人分ある
                               return ListView.builder(
-                                  itemCount: staffs.length,
+                                  itemCount: staffs.length, //2
                                   itemBuilder: (context, index) {
-                                    print('=========================');
-                                    print(userSnapshot.data);
-                                    Map<String, dynamic> datas = userSnapshot
-                                        .data! as Map<String, dynamic>;
-                                    print(datas);
-
-                                    Account userAccount =
-                                        datas['saJX5vYRVDdEIbBsgAESky6QnW22'];
-                                    Account userAccount2 =
-                                        datas['IyvdbXP3pMgwZcbIJaRvrnWlIxq1'];
-
-                                    Map<String, dynamic> data =
-                                        postSnapshot.data!.docs[index].data()
-                                            as Map<String, dynamic>;
-
-                                    UserPost post = UserPost(
-                                        id: postSnapshot.data!.docs[index].id,
-                                        content: data['content'],
-                                        Image: data['image'],
-                                        postAccountId: data['post_account_id'],
-                                        createdTime: data['created_time']);
-
                                     Account postAccount =
-                                        userSnapshot.data![post.postAccountId]!;
+                                        userSnapshot.data![staffs[index]]!;
+
+                                    List<UserPost> posts = [];
+                                    for (int i = 0;
+                                        i < postSnapshot.data!.docs.length;
+                                        i++) {
+                                      Map<String, dynamic> data =
+                                          postSnapshot.data!.docs[i].data()
+                                              as Map<String, dynamic>;
+                                      if (postAccount.id ==
+                                          data['post_account_id']) {
+                                        UserPost post = UserPost(
+                                            id: postSnapshot
+                                                .data!.docs[index].id,
+                                            content: data['content'],
+                                            Image: data['image'],
+                                            postAccountId:
+                                                data['post_account_id'],
+                                            createdTime: data['created_time']);
+                                        posts.add(post);
+                                        if (posts.length == 6) {
+                                          break;
+                                        }
+                                      }
+                                    }
 
                                     return Container(
                                       decoration: BoxDecoration(
@@ -169,7 +164,7 @@ class _StylistsPageState extends State<StylistsPage> {
                                                           builder: (context) =>
                                                               StylistAccountPage(
                                                                 userInfo:
-                                                                    userAccount,
+                                                                    postAccount,
                                                               )),
                                                     );
                                                   },
@@ -177,7 +172,7 @@ class _StylistsPageState extends State<StylistsPage> {
                                                     radius: 32,
                                                     foregroundImage:
                                                         NetworkImage(postAccount
-                                                            .imagepath),
+                                                            .imagepath!),
                                                   ),
                                                 ),
                                               ),
@@ -197,7 +192,7 @@ class _StylistsPageState extends State<StylistsPage> {
                                                             children: [
                                                               Text(
                                                                 postAccount
-                                                                    .name,
+                                                                    .name!,
                                                                 style:
                                                                     TextStyle(
                                                                   fontFamily:
@@ -208,15 +203,6 @@ class _StylistsPageState extends State<StylistsPage> {
                                                                 ),
                                                                 softWrap: false,
                                                               )
-                                                            ],
-                                                          ),
-                                                          Column(
-                                                            children: [
-                                                              Text(DateFormat(
-                                                                      'M/d/yy')
-                                                                  .format(post
-                                                                      .createdTime!
-                                                                      .toDate())),
                                                             ],
                                                           ),
                                                         ],
@@ -230,43 +216,66 @@ class _StylistsPageState extends State<StylistsPage> {
                                           SizedBox(
                                             height: 8,
                                           ),
-                                          Container(
-                                            alignment: Alignment.center,
-                                            height: 35,
-                                            width: 300,
-                                            child: Stack(
-                                              children: <Widget>[
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        const Color(0xffffaddd),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            11.0),
-                                                  ),
-                                                ),
-                                                Pinned.fromPins(
-                                                  Pin(start: 10, end: 0),
-                                                  Pin(size: 30.0, middle: 0.4),
-                                                  child: Text(
-                                                    '指名して予約',
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      fontFamily: 'Oriya MN',
-                                                      fontSize: 20,
+                                          InkWell(
+                                            onTap: () async {
+                                              final roomId = await UserFirestore
+                                                  .fetchJoinendRoomId(
+                                                      myAccount.id!,
+                                                      postAccount.id!);
+                                              StylistFirestore
+                                                  .makeRoomAndAddMyFriend(
+                                                      myAccount.id!,
+                                                      postAccount.id!);
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        TalkRoom(
+                                                            postAccount.name!,
+                                                            roomId)),
+                                              );
+                                            },
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              height: 35,
+                                              width: 300,
+                                              child: Stack(
+                                                children: <Widget>[
+                                                  Container(
+                                                    decoration: BoxDecoration(
                                                       color: const Color(
-                                                          0xffffffff),
-                                                      shadows: [
-                                                        Shadow(
-                                                          color: const Color(
-                                                              0x29000000),
-                                                          blurRadius: 6,
-                                                        )
-                                                      ],
+                                                          0xffffaddd),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              11.0),
                                                     ),
                                                   ),
-                                                ),
-                                              ],
+                                                  Pinned.fromPins(
+                                                    Pin(start: 10, end: 0),
+                                                    Pin(
+                                                        size: 30.0,
+                                                        middle: 0.4),
+                                                    child: Text(
+                                                      'メッセージ',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontFamily: 'Oriya MN',
+                                                        fontSize: 20,
+                                                        color: const Color(
+                                                            0xffffffff),
+                                                        shadows: [
+                                                          Shadow(
+                                                            color: const Color(
+                                                                0x29000000),
+                                                            blurRadius: 6,
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                           SizedBox(
@@ -278,8 +287,8 @@ class _StylistsPageState extends State<StylistsPage> {
                                               physics:
                                                   NeverScrollableScrollPhysics(),
                                               crossAxisCount: 3,
-                                              children:
-                                                  List.generate(6, (index) {
+                                              children: List.generate(
+                                                  posts.length, (index) {
                                                 return Container(
                                                   child: Row(
                                                     children: [
@@ -291,12 +300,13 @@ class _StylistsPageState extends State<StylistsPage> {
                                                           image:
                                                               DecorationImage(
                                                             fit: BoxFit.cover,
-                                                            image: post.Image ==
-                                                                    null
+                                                            image: index <
+                                                                    posts.length
                                                                 ? NetworkImage(
-                                                                    post.Image)
+                                                                    posts[index]
+                                                                        .Image)
                                                                 : NetworkImage(
-                                                                    'https://static.wixstatic.com/media/2ff517_a30eb5bec7de45c0a5456aee6973cf7b~mv2.jpeg/v1/fill/w_976,h_651,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/main_hair-1024x683.jpeg'),
+                                                                    'https://img.my-best.com/product_content_section/introduction/sections/c05b4a09ed9151c516e021bd0dd0889e?ixlib=rails-4.2.0&q=70&lossless=0&w=690&fit=max&s=4b79889a8d548c3b37e20c487222cb55'),
                                                           ),
                                                         ),
                                                       ),

@@ -114,7 +114,7 @@ class _PeoplePageState extends State<PeoplePage> {
                                           child: CircleAvatar(
                                             radius: 22,
                                             foregroundImage: NetworkImage(
-                                                userAccount.imagepath),
+                                                userAccount.imagepath!),
                                           ),
                                         ),
                                         Expanded(
@@ -130,7 +130,7 @@ class _PeoplePageState extends State<PeoplePage> {
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        Text(userAccount.name,
+                                                        Text(userAccount.name!,
                                                             style: TextStyle(
                                                                 fontSize: 18,
                                                                 fontWeight:
@@ -144,7 +144,7 @@ class _PeoplePageState extends State<PeoplePage> {
                                                             .toDate()))
                                                   ],
                                                 ),
-                                                Text(userAccount.userId),
+                                                Text(userAccount.userId!),
                                                 Container(
                                                   decoration: BoxDecoration(
                                                     image: DecorationImage(

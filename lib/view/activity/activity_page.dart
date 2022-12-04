@@ -41,7 +41,7 @@ class _ActivityPageState extends State<ActivityPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          myAccount.name,
+          myAccount.name!,
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Theme.of(context).canvasColor,
@@ -70,7 +70,7 @@ class _ActivityPageState extends State<ActivityPage> {
                         padding: const EdgeInsets.only(right: 8.0),
                         child: CircleAvatar(
                           radius: 22,
-                          foregroundImage: NetworkImage(myAccount.imagepath),
+                          foregroundImage: NetworkImage(myAccount.imagepath!),
                         ),
                       ),
                       Expanded(
@@ -86,7 +86,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        myAccount.userId,
+                                        myAccount.userId!,
                                         style: TextStyle(
                                             color:
                                                 Color.fromARGB(255, 0, 0, 0)),

@@ -82,142 +82,105 @@ class _ShopPageState extends State<ShopPage> {
         body: Column(
           children: [
             Expanded(
-              child: Container(
-                  child: FutureBuilder<dynamic>(
-                      future: ShopFirestore.getShop(),
-                      builder: (context, shopSnapshot) {
-                        print('head');
-                        if (shopSnapshot.hasData &&
-                            shopSnapshot.connectionState ==
-                                ConnectionState.done) {
-                          print('head');
-                          print(shopSnapshot.data[0].logoImage);
-                          print(shopSnapshot.data[0].shopImage);
-                          return Container(
-                            decoration: BoxDecoration(
-                                border: Border(
-                              bottom: BorderSide(color: Colors.grey, width: 0),
-                            )),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 15),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
-                                      child: CircleAvatar(
-                                        radius: 42,
-                                        foregroundImage: NetworkImage(
-                                            'https://pbs.twimg.com/profile_images/958916046835953665/-fY6FTNm_400x400.jpg'),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'Earth',
-                                                      style: TextStyle(
-                                                        fontFamily: 'Oriya MN',
-                                                        fontSize: 25,
-                                                        color: const Color(
-                                                            0xff707070),
-                                                      ),
-                                                      softWrap: false,
+                child: Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                bottom: BorderSide(color: Colors.grey, width: 0),
+              )),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: CircleAvatar(
+                          radius: 42,
+                          foregroundImage:
+                              NetworkImage(ShopFirestore.shopList[0].logoImage),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Earth',
+                                        style: TextStyle(
+                                          fontFamily: 'Oriya MN',
+                                          fontSize: 25,
+                                          color: const Color(0xff707070),
+                                        ),
+                                        softWrap: false,
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Container(
+                                        height: 35,
+                                        width: 120,
+                                        child: Stack(
+                                          children: <Widget>[
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xffffaddd),
+                                                borderRadius:
+                                                    BorderRadius.circular(11.0),
+                                              ),
+                                            ),
+                                            Pinned.fromPins(
+                                              Pin(start: 12, end: 0),
+                                              Pin(size: 20.0, middle: 0.4),
+                                              child: Text(
+                                                '指名して予約',
+                                                style: TextStyle(
+                                                  fontFamily: 'Oriya MN',
+                                                  fontSize: 16,
+                                                  color:
+                                                      const Color(0xffffffff),
+                                                  shadows: [
+                                                    Shadow(
+                                                      color: const Color(
+                                                          0x29000000),
+                                                      blurRadius: 6,
                                                     )
                                                   ],
                                                 ),
-                                                Column(
-                                                  children: [
-                                                    Container(
-                                                      height: 35,
-                                                      width: 120,
-                                                      child: Stack(
-                                                        children: <Widget>[
-                                                          Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: const Color(
-                                                                  0xffffaddd),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          11.0),
-                                                            ),
-                                                          ),
-                                                          Pinned.fromPins(
-                                                            Pin(
-                                                                start: 12,
-                                                                end: 0),
-                                                            Pin(
-                                                                size: 20.0,
-                                                                middle: 0.4),
-                                                            child: Text(
-                                                              '指名して予約',
-                                                              style: TextStyle(
-                                                                fontFamily:
-                                                                    'Oriya MN',
-                                                                fontSize: 16,
-                                                                color: const Color(
-                                                                    0xffffffff),
-                                                                shadows: [
-                                                                  Shadow(
-                                                                    color: const Color(
-                                                                        0x29000000),
-                                                                    blurRadius:
-                                                                        6,
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                SlideImage(
-                                  beforeimagePhoto:
-                                      shopSnapshot.data[0].shopImage!,
-                                ),
-                                SizedBox(
-                                  height: 15,
-                                ),
-                              ],
-                            ),
-                          );
-                        } else {
-                          return Container();
-                        }
-                      })
-                  //   } else {
-                  //     return Container();
-                  //   }
-                  // }),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-            ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  SlideImage(
+                    beforeimagePhoto: ShopFirestore.shopList[0].shopImage!,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                ],
+              ),
+            )),
             Expanded(
               child: Container(
                 child: Stack(

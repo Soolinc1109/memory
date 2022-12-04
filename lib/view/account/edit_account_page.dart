@@ -23,7 +23,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
 
   ImageProvider getImage() {
     if (image == null) {
-      return NetworkImage(myAccount.imagepath);
+      return NetworkImage(myAccount.imagepath!);
     } else {
       return FileImage(image!);
     }
@@ -180,20 +180,20 @@ class _EditAccountPageState extends State<EditAccountPage> {
                         selfintroductionController.text.isNotEmpty) {
                       String imagePath = '';
                       if (image == null) {
-                        imagePath = myAccount.imagepath;
+                        imagePath = myAccount.imagepath!;
                       } else {
                         var result = await FunctionUtils.uploadImage(
-                            myAccount.id, image!);
+                            myAccount.id!, image!);
                         imagePath == result;
                       }
-                      print(imagePath);
+
                       Account updateAccount = Account(
                           id: myAccount.id,
                           name: nameController.text,
                           selfIntroduction: selfintroductionController.text,
                           userId: userIdController.text,
                           imagepath: imagePath);
-                      print(updateAccount);
+
                       var result =
                           await UserFirestore.updateUser(updateAccount);
                       if (result == true) {

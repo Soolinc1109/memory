@@ -89,13 +89,19 @@ class _LoginPageState extends State<LoginPage> {
                           pass: passController.text);
                       if (result is UserCredential) {
                         var _result =
-                        await UserFirestore.getUser(result.user!.uid);
+                            await UserFirestore.getUser(result.user!.uid);
                         await ShopFirestore.getShop();
                         if (_result == true) {
+                          //is_stylist = true　だったら　すたいりストページへ
+                          // if(Authentication.myAccount!.is_stylist == true){
+                          //   Navigator.pushReplacement(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => MainPage()),
+                          // );
+                          // }
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => MainPage(title:'こんにちは')),
+                            MaterialPageRoute(builder: (context) => MainPage()),
                           );
                         }
                       }

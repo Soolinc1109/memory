@@ -15,16 +15,14 @@ class UserPostFirestore {
           .collection('users')
           .doc(newPost.postAccountId)
           .collection('my_user_post');
-      var result = await userposts.add({
+      var result = await userposts.doc(newPost.id).set({
         'content': newPost.content,
         'image': newPost.Image,
         'post_account_id': newPost.postAccountId,
         'created_time': Timestamp.now(),
       });
       //大きい枠組みのポストに投稿を追加！さらに自分のマイポストにも追加したい！
-      _userPosts
-          .doc(result.id)
-          .set({'post_id': result.id, 'created_time': Timestamp.now()});
+      _userPosts.doc(newPost.id).set({'post_id': newPost.id, 'created_time': Timestamp.now()});
       //自分の投稿のみを入れるマイポストに登録！
       print('投稿作成完了');
       return true;

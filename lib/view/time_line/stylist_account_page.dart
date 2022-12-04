@@ -14,7 +14,7 @@ import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/userpost.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/account/book_list.dart';
+
 import 'package:memorys/view/account/edit_account_page.dart';
 import 'package:memorys/view/account/follwing_page.dart';
 import 'package:memorys/view/account/other_account.dart';
@@ -59,7 +59,6 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
       .doc('R2K2fmb3Z0fksPEvemk5LWSUPwv1')
       .collection('my_follows');
 
-  Account myAccount = Authentication.myAccount!;
 //ポストのインスタンスを格納したリスト型の変数、を定義
 
   OutlinedButton createButton() {
@@ -72,14 +71,14 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
         buttonText = 'フォロー中';
         onPressed = () async {
           var removeAccountDocument = await UserFirestore.users
-              .doc(myAccount.id)
+              .doc(widget.userInfo!.id)
               .collection('my_follows')
               .where('following_id', isEqualTo: widget.userInfo!.id)
               //list型で返ってくる
               .get();
           await UserFirestore.removeUser(
             removeAccountDocument.docs[0].id,
-            myAccount.id,
+            widget.userInfo!.id!,
           );
 
           widget.isFollwing = false;
@@ -92,7 +91,7 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
         onPressed = () async {
           await UserFirestore.followUser(
             widget.userInfo!,
-            myAccount.id,
+            widget.userInfo!.id!,
           );
           widget.isFollwing = true;
           //画面のリロード　→ setstate
@@ -122,7 +121,7 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
           iconTheme: IconThemeData(color: Colors.black, size: 30),
           backgroundColor: Colors.white,
           title: Text(
-            myAccount.userId,
+            widget.userInfo!.id!,
             style: TextStyle(
                 color: Color.fromARGB(255, 0, 0, 0),
                 fontSize: 25,
@@ -152,9 +151,10 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                                   CircleAvatar(
                                       radius: 41,
                                       foregroundImage: widget.userInfo == null
-                                          ? NetworkImage(myAccount.imagepath)
+                                          ? NetworkImage(
+                                              widget.userInfo!.imagepath!)
                                           : NetworkImage(
-                                              widget.userInfo!.imagepath)),
+                                              widget.userInfo!.imagepath!)),
                                   SizedBox(
                                     width: 50,
                                   ),
@@ -244,14 +244,14 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                           widget.userInfo == null
                               ? Text(
                                   //ステイトフルウィジェットのクラスをステイトのクラスで使おうとするときにwidget.が必要！
-                                  myAccount.name,
+                                  widget.userInfo!.name!,
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
                                 )
                               : Text(
                                   //ステイトフルウィジェットのクラスをステイトのクラスで使おうとするときにwidget.が必要！
-                                  widget.userInfo!.name,
+                                  widget.userInfo!.name!,
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
@@ -260,8 +260,8 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                             height: 5,
                           ),
                           widget.userInfo == null
-                              ? Text(myAccount.selfIntroduction)
-                              : Text(widget.userInfo!.selfIntroduction),
+                              ? Text(widget.userInfo!.selfIntroduction!)
+                              : Text(widget.userInfo!.selfIntroduction!),
                           SizedBox(
                               width: double.infinity, child: createButton())
                         ],
@@ -305,7 +305,7 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                       child: StreamBuilder<QuerySnapshot>(
                           stream: FirebaseFirestore.instance
                               .collection('users')
-                              .doc(myAccount.id)
+                              .doc(widget.userInfo!.id)
                               .collection('my_user_post')
                               .orderBy('created_time', descending: true)
                               .snapshots(),
@@ -313,7 +313,8 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                             if (snapshot.hasData) {
                               List<String> myPostIds = List.generate(
                                   snapshot.data!.docs.length, (index) {
-                                return snapshot.data!.docs[index].id;
+                                return snapshot.data!.docs[index].id
+                                    .replaceAll(' ', '');
                                 //自分のmypostsのIDとpostsコレクションにある同じIDの投稿をとってくるために参照
                                 //futureで情報を取る前にじぶんのIDと同じものを取るためにやらないといけない処理↑
                               });
@@ -333,7 +334,7 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                                           itemBuilder: (context, index) {
                                             UserPost post =
                                                 snapshot.data![index];
-                                            print(post.Image);
+
                                             return Container(
                                               child: Row(
                                                 children: [
@@ -377,16 +378,19 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                     child: StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('users')
-                            .doc(myAccount.id)
+                            .doc(widget.userInfo!.id)
                             .collection('my_user_post')
                             .orderBy('created_time', descending: true)
                             .snapshots(),
                         builder: (context, snapshot) {
+                          print('=========================');
                           if (snapshot.hasData) {
                             print(snapshot);
+                            print('=========================');
                             List<String> myPostIds = List.generate(
                                 snapshot.data!.docs.length, (index) {
-                              return snapshot.data!.docs[index].id;
+                              return snapshot.data!.docs[index].id
+                                  .replaceAll(' ', '');
                               //自分のmypostsのIDとpostsコレクションにある同じIDの投稿をとってくるために参照
                               //futureで情報を取る前にじぶんのIDと同じものを取るためにやらないといけない処理↑
                             });
@@ -430,12 +434,12 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                                                       foregroundImage: widget
                                                                   .userInfo ==
                                                               null
-                                                          ? NetworkImage(
-                                                              myAccount
-                                                                  .imagepath)
+                                                          ? NetworkImage(widget
+                                                              .userInfo!
+                                                              .imagepath!)
                                                           : NetworkImage(widget
                                                               .userInfo!
-                                                              .imagepath)),
+                                                              .imagepath!)),
                                                 ),
                                                 Expanded(
                                                   child: Container(
@@ -454,22 +458,23 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                                                                 widget.userInfo ==
                                                                         null
                                                                     ? Text(
-                                                                        myAccount
-                                                                            .name,
+                                                                        widget
+                                                                            .userInfo!
+                                                                            .name!,
                                                                         style: TextStyle(
                                                                             fontWeight: FontWeight
                                                                                 .bold))
                                                                     : Text(
                                                                         widget
                                                                             .userInfo!
-                                                                            .name,
+                                                                            .name!,
                                                                         style: TextStyle(
                                                                             fontWeight:
                                                                                 FontWeight.bold)),
                                                                 widget.userInfo ==
                                                                         null
                                                                     ? Text(
-                                                                        '@${myAccount.userId}',
+                                                                        '@${widget.userInfo!.userId}',
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Colors.grey),
@@ -515,7 +520,7 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                         child: StreamBuilder<QuerySnapshot>(
                             stream: FirebaseFirestore.instance
                                 .collection('users')
-                                .doc(myAccount.id)
+                                .doc(widget.userInfo!.id)
                                 .collection('my_user_post')
                                 .orderBy('created_time', descending: true)
                                 .snapshots(),
@@ -524,7 +529,8 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                                 print(snapshot);
                                 List<String> myPostIds = List.generate(
                                     snapshot.data!.docs.length, (index) {
-                                  return snapshot.data!.docs[index].id;
+                                  return snapshot.data!.docs[index].id
+                                      .replaceAll(' ', '');
                                   //自分のmypostsのIDとpostsコレクションにある同じIDの投稿をとってくるために参照
                                   //futureで情報を取る前にじぶんのIDと同じものを取るためにやらないといけない処理↑
                                 });
@@ -576,9 +582,9 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                                                           child: CircleAvatar(
                                                             radius: 32,
                                                             foregroundImage:
-                                                                NetworkImage(
-                                                                    myAccount
-                                                                        .imagepath),
+                                                                NetworkImage(widget
+                                                                    .userInfo!
+                                                                    .imagepath!),
                                                           ),
                                                         ),
                                                         Expanded(
@@ -596,8 +602,9 @@ class _StylistAccountPageState extends State<StylistAccountPage> {
                                                                     Row(
                                                                       children: [
                                                                         Text(
-                                                                          myAccount
-                                                                              .name,
+                                                                          widget
+                                                                              .userInfo!
+                                                                              .name!,
                                                                           style:
                                                                               TextStyle(
                                                                             fontFamily:

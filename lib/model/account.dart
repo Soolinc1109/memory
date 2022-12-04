@@ -3,14 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Account {
   // フィールド（変数）を定義　＝＞　属性どんなもの？
-  String id;
-  String name;
-  String imagepath;
-  String selfIntroduction;
-  String userId;
-  String follow;
-  String follower;
-  bool is_stylist;
+  String? id;
+  String? name;
+  String? imagepath;
+  String? selfIntroduction;
+  String? userId;
+  String? follow;
+  String? follower;
+  bool? is_stylist;
   Timestamp? createdTime;
   Timestamp? updatedTime;
 //メソッドの定

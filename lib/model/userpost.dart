@@ -8,7 +8,7 @@ class UserPost {
   Timestamp? createdTime;
 
   UserPost({
-    this.id = '1',
+    this.id = '',
     this.Image = '',
     this.content = '1',
     this.postAccountId = '1',

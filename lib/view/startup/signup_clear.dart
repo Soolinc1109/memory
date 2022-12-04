@@ -66,9 +66,9 @@ class _ClearPageState extends State<ClearPage> {
                       id: myAccount.id,
                       name: nameController.text,
                     );
-
                     var result = await UserFirestore.updateUser(updateAccount);
                     if (result == true) {
+                      Authentication.myAccount = updateAccount;
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => TopImagePage()),

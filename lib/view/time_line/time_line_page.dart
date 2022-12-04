@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/model/post.dart';
+import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/time_line/post_page.dart';
@@ -22,6 +23,8 @@ class _TimeLinePageState extends State<TimeLinePage> {
   void initState() {
     super.initState();
   }
+
+  Account myAccount = Authentication.myAccount!;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +94,8 @@ class _TimeLinePageState extends State<TimeLinePage> {
                         }
                       });
                       return FutureBuilder<Map<String, Account>?>(
-                          future: UserFirestore.getPostUserMap(postAccountIds),
+                          future: UserFirestore.getPostUserMap(
+                              myAccount.id!, postAccountIds),
                           builder: (context, userSnapshot) {
                             if (userSnapshot.hasData &&
                                 userSnapshot.connectionState ==
