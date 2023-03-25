@@ -18,9 +18,7 @@ extension OnPressed on Widget {
                   RoundedRectangleBorder(borderRadius: borderRadius),
                 )),
                 onPressed: () {
-                  if (onPressed != null) {
-                    onPressed();
-                  }
+                  onPressed();
                 },
                 child: Container()),
           )

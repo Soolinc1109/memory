@@ -43,21 +43,25 @@ dependencies:
   flutter_svg: ^1.1.0
   adobe_xd: ^2.0.1
   path_provider: ^2.0.1
-  flutter_launcher_icons: ^0.9.3
+  
   carousel_slider: ^4.0.0
   smooth_page_indicator: ^0.3.0-nullsafety.0
   material_segmented_control: ^3.1.2
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_launcher_icons: ^0.9.3  
 
 flutter_icons:
   android: true
   ios: true
   image_path: "images/memorys.png"
   #image_path_android: "assets/images/（android用の画像）.png"
-  #image_path_ios: "assets/images/（ios用の画像）.png"
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  #image_path_ios: "assets/images/（ios用の画像）.png"  
 
 
   flutter_lints: ^2.0.0

@@ -4,7 +4,8 @@ import 'package:memorys/model/shop.dart';
 
 class ShopFirestore {
   static List<Shop> shopList = [];
-
+  //インスタンスを作らなくてもアクセスできる
+  //
   static final _firestoreInstance = FirebaseFirestore.instance;
   static final CollectionReference shops =
       _firestoreInstance.collection('Shop');

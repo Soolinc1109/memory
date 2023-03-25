@@ -9,12 +9,14 @@ import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/utils/function_utils.dart';
 import 'package:memorys/view/account/account_page.dart';
 import 'package:memorys/view/bottomnavigationbar/screen.dart';
+import 'package:memorys/view/main_page.dart';
 import 'package:memorys/view/startup/create_account_page.dart';
 import 'package:memorys/view/startup/passward.dart';
 
 import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
+import 'package:memorys/view/time_line/time_line_page.dart';
 
 class TopImagePage extends StatefulWidget {
   const TopImagePage({Key? key}) : super(key: key);
@@ -24,13 +26,15 @@ class TopImagePage extends StatefulWidget {
 }
 
 class _TopImagePageState extends State<TopImagePage> {
-
-  Account? myAccount = Authentication.myAccount;
+  Account myAccount = Authentication.myAccount!;
   TextEditingController emailController = TextEditingController();
   File? image;
-  
+
   @override
   Widget build(BuildContext context) {
+    print(myAccount.id);
+    print(myAccount.name);
+    print(myAccount.is_stylist);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
@@ -105,16 +109,21 @@ class _TopImagePageState extends State<TopImagePage> {
                   child: ElevatedButton(
                       onPressed: () async {
                         if (image != null) {
-                          String imagePath = await FunctionUtils.uploadImage(myAccount!.id,image!);
-                          Account newAccount = Account(
+                          String imagePath = await FunctionUtils.uploadImage(
+                              myAccount.id, image!);
+                          Account updateAccount = Account(
+                            id: myAccount.id,
+                            name: myAccount.name,
                             imagepath: imagePath,
                           );
-                          var _result = await UserFirestore.setUser(newAccount);
+                          var _result =
+                              await UserFirestore.updateUser(updateAccount);
                           if (_result == true) {
-                            Navigator.push(
+                            Authentication.myAccount = updateAccount;
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => AccountPage()),
+                                  builder: (context) => MainPage()),
                             );
                           }
                         }
@@ -136,9 +145,9 @@ class _TopImagePageState extends State<TopImagePage> {
                   style: TextStyle(color: Colors.orange),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => AccountPage()),
+                        MaterialPageRoute(builder: (context) => MainPage()),
                       );
                     }),
             ]),

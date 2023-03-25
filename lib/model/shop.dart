@@ -1,5 +1,4 @@
 // Accountクラス(アカウントの設計図)を生成
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Shop {
   // フィールド（変数）を定義　＝＞　属性どんなもの？

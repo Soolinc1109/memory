@@ -14,7 +14,6 @@ import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/userpost.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/account/book_list.dart';
 import 'package:memorys/view/account/edit_account_page.dart';
 import 'package:memorys/view/account/follwing_page.dart';
 import 'package:memorys/view/account/other_account.dart';
@@ -336,7 +335,6 @@ class _AccountPageState extends State<AccountPage> {
                               .orderBy('created_time', descending: true)
                               .snapshots(),
                           builder: (context, snapshot) {
-                            print('=========================');
                             if (snapshot.hasData) {
                               List<String> myPostIds = List.generate(
                                   snapshot.data!.docs.length, (index) {

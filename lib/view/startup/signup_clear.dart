@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/bottomnavigationbar/screen.dart';
 import 'package:memorys/view/startup/top_image.dart';
 
 class ClearPage extends StatefulWidget {
@@ -66,9 +65,9 @@ class _ClearPageState extends State<ClearPage> {
                       id: myAccount.id,
                       name: nameController.text,
                     );
-
                     var result = await UserFirestore.updateUser(updateAccount);
                     if (result == true) {
+                      Authentication.myAccount = updateAccount;
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => TopImagePage()),

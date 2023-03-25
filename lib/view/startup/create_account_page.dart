@@ -88,15 +88,19 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           email: emailController.text,
                           pass: passController.text);
                       if (result is UserCredential) {
+                        print(result);
                         // var results =
                         //     await UserFirestore.getUser(result.user!.uid);
                         // print('=========');
                         //resultがusercredential型だったら（ユーザーができてたら）
                         Account newAccount = Account(
                           id: result.user!.uid,
-
+                          is_stylist: false,
                           //新規登録アカウントのユーザーUIDをとってきている
                         );
+
+                        Authentication.myAccount = newAccount;
+                        print(newAccount.id);
                         print(Authentication.myAccount);
 
                         var _result = await UserFirestore.setUser(newAccount);
