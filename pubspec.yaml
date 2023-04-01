@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -30,7 +30,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -43,26 +42,24 @@ dependencies:
   flutter_svg: ^1.1.0
   adobe_xd: ^2.0.1
   path_provider: ^2.0.1
-  
+  provider: ^6.0.5
   carousel_slider: ^4.0.0
   smooth_page_indicator: ^0.3.0-nullsafety.0
   material_segmented_control: ^3.1.2
-
-
+  table_calendar: ^3.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_launcher_icons: ^0.9.3  
+  flutter_launcher_icons: ^0.9.3
 
 flutter_icons:
   android: true
   ios: true
   image_path: "images/memorys.png"
   #image_path_android: "assets/images/（android用の画像）.png"
-  #image_path_ios: "assets/images/（ios用の画像）.png"  
-
+  #image_path_ios: "assets/images/（ios用の画像）.png"
 
   flutter_lints: ^2.0.0
 
@@ -71,9 +68,6 @@ flutter_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
-
-
   uses-material-design: true
   assets:
-  - images/
-
+    - images/

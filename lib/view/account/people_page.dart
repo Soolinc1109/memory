@@ -42,7 +42,7 @@ class _PeoplePageState extends State<PeoplePage> {
                   List<String> userId = [];
                   userSnapshot.data!.docs.forEach((doc) {
                     Map<String, dynamic> data =
-                    doc.data() as Map<String, dynamic>;
+                        doc.data() as Map<String, dynamic>;
                     userId.add(doc.id);
                     userId.remove(myAccount.id);
                   });
@@ -83,7 +83,6 @@ class _PeoplePageState extends State<PeoplePage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => AccountPage(
-                                              userInfo: userAccount,
                                               isFollwing: isFollwing)),
                                       //一つ目が遷移先に定義したコンストラクタ名
                                       //二つ目がこのページから受け渡したいデータの変数名

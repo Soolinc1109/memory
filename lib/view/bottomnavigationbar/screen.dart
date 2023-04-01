@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memorys/view/account/account_page.dart';
-import 'package:memorys/view/activity/activity_page.dart';
+import 'package:memorys/view/time_line/calendar.dart';
+import 'package:memorys/view/time_line/home_page.dart';
 import 'package:memorys/view/time_line/time_line_page.dart';
 
 class Screen extends StatefulWidget {
@@ -13,9 +14,10 @@ class Screen extends StatefulWidget {
 class _ScreenState extends State<Screen> {
   int selectedIndex = 0;
   List<Widget> pageList = [
+    HomePage(),
     TimeLinePage(),
     AccountPage(),
-    ActivityPage(),
+    CalendarScreen(),
     AccountPage(),
   ];
 

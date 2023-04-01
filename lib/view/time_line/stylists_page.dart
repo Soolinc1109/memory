@@ -1,20 +1,14 @@
 import 'package:adobe_xd/adobe_xd.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:memorys/model/account.dart';
-import 'package:memorys/model/post.dart';
 import 'package:memorys/model/userpost.dart';
 import 'package:memorys/utils/authentication.dart';
-import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/shops.dart';
 import 'package:memorys/utils/firestore/userpost.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/time_line/post_page.dart';
 import 'package:memorys/view/time_line/stylist_account_page.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class StylistsPage extends StatefulWidget {
   const StylistsPage({Key? key}) : super(key: key);
@@ -24,8 +18,8 @@ class StylistsPage extends StatefulWidget {
 }
 
 class _StylistsPageState extends State<StylistsPage> {
-  var staffs = ShopFirestore.shopList[0].staff;
-  Account myAccount = Authentication.myAccount!;
+  // var staffs = ShopFirestore.shopList[0].staff;
+  // Account myAccount = Authentication.myAccount!;
   void initState() {
     super.initState();
     print('スタイリストページ');
@@ -82,234 +76,125 @@ class _StylistsPageState extends State<StylistsPage> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: Container(
-              child: StreamBuilder<QuerySnapshot>(
-                  stream: UserPostFirestore.userposts
-                      .where('post_account_id',
-                          whereIn: ShopFirestore.shopList[0].staff)
-                      .snapshots(),
-                  builder: (context, postSnapshot) {
-                    if (postSnapshot.hasData) {
-                      return FutureBuilder<Map<String, Account>?>(
-                          future: UserFirestore.getPostUserMap(
-                              ShopFirestore.shopList[0].staff),
-                          builder: (context, userSnapshot) {
-                            if (userSnapshot.hasData &&
-                                userSnapshot.connectionState ==
-                                    ConnectionState.done) {
-                              print('=========s================');
-                              print(userSnapshot.data); //2人分ある
-                              return ListView.builder(
-                                  itemCount: staffs.length, //2
-                                  itemBuilder: (context, index) {
-                                    Account postAccount =
-                                        userSnapshot.data![staffs[index]]!;
-
-                                    List<UserPost> posts = [];
-                                    for (int i = 0;
-                                        i < postSnapshot.data!.docs.length;
-                                        i++) {
-                                      Map<String, dynamic> data =
-                                          postSnapshot.data!.docs[i].data()
-                                              as Map<String, dynamic>;
-                                      if (postAccount.id ==
-                                          data['post_account_id']) {
-                                        UserPost post = UserPost(
-                                            id: postSnapshot
-                                                .data!.docs[index].id,
-                                            content: data['content'],
-                                            Image: data['image'],
-                                            postAccountId:
-                                                data['post_account_id'],
-                                            createdTime: data['created_time']);
-                                        posts.add(post);
-                                        if (posts.length == 6) {
-                                          break;
-                                        }
-                                      }
-                                    }
-
-                                    return Container(
-                                      decoration: BoxDecoration(
-                                          border: index == 0
-                                              ? Border(
-                                                  top: BorderSide(
-                                                      color: Colors.grey,
-                                                      width: 0),
-                                                  bottom: BorderSide(
-                                                      color: Colors.grey,
-                                                      width: 0),
-                                                )
-                                              : Border(
-                                                  bottom: BorderSide(
-                                                      color: Colors.grey,
-                                                      width: 0),
-                                                )),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 15),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 8.0),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              StylistAccountPage(
-                                                                userInfo:
-                                                                    postAccount,
-                                                              )),
-                                                    );
-                                                  },
-                                                  child: CircleAvatar(
-                                                    radius: 32,
-                                                    foregroundImage:
-                                                        NetworkImage(postAccount
-                                                            .imagepath),
-                                                  ),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Container(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Column(
-                                                            children: [
-                                                              Text(
-                                                                postAccount
-                                                                    .name,
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      'Oriya MN',
-                                                                  fontSize: 25,
-                                                                  color: const Color(
-                                                                      0xff707070),
-                                                                ),
-                                                                softWrap: false,
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 8,
-                                          ),
-                                          Container(
-                                            alignment: Alignment.center,
-                                            height: 35,
-                                            width: 300,
-                                            child: Stack(
-                                              children: <Widget>[
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        const Color(0xffffaddd),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            11.0),
-                                                  ),
-                                                ),
-                                                Pinned.fromPins(
-                                                  Pin(start: 10, end: 0),
-                                                  Pin(size: 30.0, middle: 0.4),
-                                                  child: Text(
-                                                    '指名して予約',
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      fontFamily: 'Oriya MN',
-                                                      fontSize: 20,
-                                                      color: const Color(
-                                                          0xffffffff),
-                                                      shadows: [
-                                                        Shadow(
-                                                          color: const Color(
-                                                              0x29000000),
-                                                          blurRadius: 6,
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Container(
-                                            child: GridView.count(
-                                              shrinkWrap: true,
-                                              physics:
-                                                  NeverScrollableScrollPhysics(),
-                                              crossAxisCount: 3,
-                                              children: List.generate(
-                                                  posts.length, (index) {
-                                                return Container(
-                                                  child: Row(
-                                                    children: [
-                                                      Container(
-                                                        height: 120,
-                                                        width: 120,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          image:
-                                                              DecorationImage(
-                                                            fit: BoxFit.cover,
-                                                            image: index <
-                                                                    posts.length
-                                                                ? NetworkImage(
-                                                                    posts[index]
-                                                                        .Image)
-                                                                : NetworkImage(
-                                                                    'https://img.my-best.com/product_content_section/introduction/sections/c05b4a09ed9151c516e021bd0dd0889e?ixlib=rails-4.2.0&q=70&lossless=0&w=690&fit=max&s=4b79889a8d548c3b37e20c487222cb55'),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              }),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 15,
-                                          ),
-                                        ],
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: InkWell(
+                        onTap: () {},
+                        child: CircleAvatar(
+                          radius: 32,
+                          foregroundImage: NetworkImage(""),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      "postAccount",
+                                      style: TextStyle(
+                                        fontFamily: 'Oriya MN',
+                                        fontSize: 25,
+                                        color: const Color(0xff707070),
                                       ),
-                                    );
-                                  });
-                            } else {
-                              print('object');
-                              return Container();
-                            }
-                          });
-                    } else {
-                      return Container();
-                    }
-                  }),
+                                      softWrap: false,
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  height: 35,
+                  width: 300,
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xffffaddd),
+                          borderRadius: BorderRadius.circular(11.0),
+                        ),
+                      ),
+                      Pinned.fromPins(
+                        Pin(start: 10, end: 0),
+                        Pin(size: 30.0, middle: 0.4),
+                        child: Text(
+                          '指名して予約',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Oriya MN',
+                            fontSize: 20,
+                            color: const Color(0xffffffff),
+                            shadows: [
+                              Shadow(
+                                color: const Color(0x29000000),
+                                blurRadius: 6,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  child: GridView.count(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    crossAxisCount: 3,
+                    children: List.generate(2, (index) {
+                      return Container(
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 120,
+                              width: 120,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: index < 2
+                                      ? NetworkImage('')
+                                      : NetworkImage(
+                                          'https://img.my-best.com/product_content_section/introduction/sections/c05b4a09ed9151c516e021bd0dd0889e?ixlib=rails-4.2.0&q=70&lossless=0&w=690&fit=max&s=4b79889a8d548c3b37e20c487222cb55'),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+              ],
             ),
-          ),
+          )
         ],
       ),
     );

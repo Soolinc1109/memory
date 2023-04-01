@@ -1,22 +1,11 @@
-import 'dart:ffi';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/utils/function_utils.dart';
-import 'package:memorys/view/account/account_page.dart';
-import 'package:memorys/view/bottomnavigationbar/screen.dart';
 import 'package:memorys/view/main_page.dart';
-import 'package:memorys/view/startup/create_account_page.dart';
-import 'package:memorys/view/startup/passward.dart';
-
 import 'dart:io';
-
-import 'package:image_picker/image_picker.dart';
-import 'package:memorys/view/time_line/time_line_page.dart';
 
 class TopImagePage extends StatefulWidget {
   const TopImagePage({Key? key}) : super(key: key);

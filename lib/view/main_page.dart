@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/view/account/account_page.dart';
 import 'package:memorys/view/bottomnavigationbar/bottom_navigation_bar.dart';
+import 'package:memorys/view/time_line/calendar.dart';
 import 'package:memorys/view/time_line/customer_page.dart';
+import 'package:memorys/view/time_line/home_page.dart';
 import 'package:memorys/view/time_line/shop_page.dart';
-import 'package:memorys/view/time_line/stylists_page.dart';
 import 'package:memorys/view/time_line/time_line_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -21,8 +22,9 @@ class _MainPageState extends State<MainPage> {
     List<Widget> basePageList = [
       isStylist ? CustomerPageList() : TimeLinePage(),
       ShopPage(),
-      StylistsPage(),
       AccountPage(),
+      CalendarScreen(),
+      HomePage(),
     ];
     return basePageList;
   }
@@ -35,7 +37,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isStylist = Authentication.myAccount!.is_stylist == true;
+    bool isStylist = false;
+    //  = Authentication.myAccount!.is_stylist =
     List<Widget> pageList = getPageList(isStylist);
 
     return Scaffold(

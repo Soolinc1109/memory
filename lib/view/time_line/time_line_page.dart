@@ -8,17 +8,18 @@ import 'package:memorys/model/account.dart';
 import 'package:memorys/model/post.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
+import 'package:memorys/view/time_line/before_after.dart';
 import 'package:memorys/view/time_line/post_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class TimeLinePage extends StatefulWidget {
-  const TimeLinePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  _TimeLinePageState createState() => _TimeLinePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _TimeLinePageState extends State<TimeLinePage> {
+class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
   }
@@ -251,9 +252,20 @@ class _TimeLinePageState extends State<TimeLinePage> {
                                           SizedBox(
                                             height: 8,
                                           ),
-                                          SlideImage(
-                                            beforeimagePhoto: post.beforeImage!,
-                                            afterimagePhoto: post.afterImage!,
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        BeforeAfterDetail()),
+                                              );
+                                            },
+                                            child: SlideImage(
+                                              beforeimagePhoto:
+                                                  post.beforeImage!,
+                                              afterimagePhoto: post.afterImage!,
+                                            ),
                                           ),
                                           SizedBox(
                                             height: 15,

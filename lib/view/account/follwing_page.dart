@@ -68,8 +68,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => AccountPage(
-                                              userInfo: userAccount)),
+                                          builder: (context) => AccountPage()),
                                     );
                                   },
                                   child: Container(
