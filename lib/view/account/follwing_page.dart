@@ -6,8 +6,9 @@ import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/account/account_page.dart';
-import 'package:memorys/view/time_line/post_page.dart';
+import 'package:memorys/view/time_line/create_stylist_post_page.dart';
 import 'package:intl/intl.dart';
+import 'package:memorys/view/time_line/create_user_post_page.dart';
 
 class FollowingPage extends StatefulWidget {
   const FollowingPage({Key? key}) : super(key: key);
@@ -157,7 +158,7 @@ class _FollowingPageState extends State<FollowingPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const PostPage()),
+            MaterialPageRoute(builder: (context) => const CreatePostPage()),
           );
         },
         child: Icon(Icons.chat_bubble_outline),

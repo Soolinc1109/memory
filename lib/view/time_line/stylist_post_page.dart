@@ -3,15 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/authentication.dart';
+import 'package:memorys/view/time_line/create_stylist_post_page.dart';
 import 'package:memorys/view/time_line/create_user_post_page.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CalendarScreen extends StatefulWidget {
+class StylistPostPage extends StatefulWidget {
   @override
-  _CalendarScreenState createState() => _CalendarScreenState();
+  _StylistPostPageState createState() => _StylistPostPageState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _StylistPostPageState extends State<StylistPostPage> {
 // Account myAccount = Authentication.myaccount!;
   Account myAccount = Authentication.myAccount!;
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -54,9 +55,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Color.fromARGB(255, 254, 222, 226),
-                      Color.fromARGB(255, 253, 193, 211),
-                      Color.fromARGB(255, 252, 165, 200)
+                      Color.fromARGB(255, 159, 217, 255),
+                      Color.fromARGB(255, 68, 180, 255),
+                      Color.fromARGB(255, 92, 176, 255)
                     ],
                   ),
                 ),
@@ -204,10 +205,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
         onPressed: () async {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const CreatePostPage()),
+            MaterialPageRoute(
+                builder: (context) => const CreateStylistPostPage()),
           );
         },
-        backgroundColor: Color.fromARGB(255, 255, 127, 169),
+        backgroundColor: Color.fromARGB(255, 142, 168, 255),
         child: Icon(Icons.add),
       ),
     );

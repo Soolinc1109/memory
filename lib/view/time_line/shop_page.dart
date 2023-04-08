@@ -1,9 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/shop.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/shops.dart';
 import 'package:memorys/view/time_line/style_detail_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({Key? key}) : super(key: key);
@@ -39,7 +41,8 @@ class _ShopPageState extends State<ShopPage> {
                         child: Container(
                       decoration: BoxDecoration(
                           border: Border(
-                        bottom: BorderSide(color: Colors.grey, width: 0),
+                        bottom:
+                            BorderSide(color: AppColors.primaryColor, width: 0),
                       )),
                       child: SingleChildScrollView(
                         child: Column(
@@ -56,29 +59,40 @@ class _ShopPageState extends State<ShopPage> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 38.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 239, 239, 239),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                padding: EdgeInsets.symmetric(vertical: 10.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Color.fromARGB(255, 129, 129, 129),
-                                    ),
-                                    SizedBox(width: 10.0),
-                                    Text(
-                                      'お気に入りのお店に追加',
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.0,
+                              child: InkWell(
+                                onTap: () async {
+                                  const url =
+                                      'https://beauty.hotpepper.jp/slnH000595471/style/L169427111.html';
+                                  if (await canLaunch(url)) {
+                                    await launch(url);
+                                  } else {
+                                    throw 'Could not launch $url';
+                                  }
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryColor,
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.favorite,
+                                        color: AppColors.secondaryColor,
                                       ),
-                                    ),
-                                  ],
+                                      SizedBox(width: 10.0),
+                                      Text(
+                                        '予約する',
+                                        style: TextStyle(
+                                          color: AppColors.secondaryColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -926,7 +940,7 @@ class _TextExpansionState extends State<TextExpansion> {
             },
             child: Text(
               _showFullText ? '閉じる' : 'もっと見る',
-              style: TextStyle(fontSize: 11),
+              style: TextStyle(fontSize: 11, color: AppColors.secondaryColor),
             ),
           ),
       ],
@@ -935,7 +949,7 @@ class _TextExpansionState extends State<TextExpansion> {
 }
 
 class SlideImage extends StatefulWidget {
-  final List<dynamic> beforeimagePhoto;
+  final List<String> beforeimagePhoto;
 
   const SlideImage({Key? key, required this.beforeimagePhoto})
       : super(key: key);

@@ -5,7 +5,7 @@ class Shop {
   String id;
   String name;
   String logoImage;
-  List<dynamic>? shopImage;
+  List<String>? shopImage;
   List<String> staff;
 
 //メソッドの定

@@ -44,7 +44,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
   double _indexToPosition(int index) {
     // Calculate button positions based off of their
     // index (works with `MainAxisAlignment.spaceAround`)
-    const buttonCount = 5.0;
+    const buttonCount = 4.0;
     final appWidth = MediaQuery.of(context).size.width;
     final buttonsWidth = _getButtonContainerWidth();
     final startX = (appWidth - buttonsWidth) / 2;
@@ -76,12 +76,12 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
               alignment: Alignment.center,
               decoration: BoxDecoration(
                   color: isEnable
-                      ? Color.fromARGB(197, 255, 119, 192)
+                      ? Color.fromARGB(197, 254, 245, 255)
                       : Colors.white,
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                       color: isEnable
-                          ? Color.fromARGB(134, 255, 178, 255)
+                          ? Color.fromARGB(133, 255, 242, 255)
                           : Colors.white,
                       blurRadius: 10,
                       spreadRadius: 5,
@@ -93,7 +93,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
                 opacity: isEnable ? _yController.value : 1,
                 child: Icon(icon,
                     color: isEnable
-                        ? LightColor.background
+                        ? Color.fromARGB(255, 243, 43, 146)
                         : Theme.of(context).iconTheme.color),
               )),
         ),
@@ -110,7 +110,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
             begin: Curves.easeInExpo.transform(_yController.value),
             end: inCurve.transform(_yController.value),
           ).transform(_yController.velocity.sign * 0.5 + 0.5),
-          Theme.of(context).backgroundColor),
+          Color.fromARGB(255, 255, 207, 203)),
     );
   }
 
@@ -168,9 +168,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
               children: <Widget>[
                 _icon(Icons.home, _selectedIndex == 0, 0),
                 _icon(Icons.memory, _selectedIndex == 1, 1),
-                _icon(Icons.search, _selectedIndex == 2, 2),
-                _icon(Icons.favorite_outline, _selectedIndex == 3, 3),
-                _icon(Icons.person, _selectedIndex == 4, 4), // 新しいタブを追加
+                _icon(Icons.favorite_outline, _selectedIndex == 2, 2),
+                _icon(Icons.person, _selectedIndex == 3, 3), // 新しいタブを追加
               ],
             ),
           ),

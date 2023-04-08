@@ -27,17 +27,18 @@ class FunctionUtils {
     return downloadUrl;
   }
 
-  static Future<Map<String,String>> addPostImage(String uid, File image) async {
-    Map<String,String> result = {};
+  static Future<Map<String, String>> addPostImage(
+      String uid, File image) async {
+    Map<String, String> result = {};
     String randomString = generateRandomString();
     final FirebaseStorage storageInstance = FirebaseStorage.instance;
     final Reference ref = storageInstance.ref();
     await ref.child('$uid/$randomString').putFile(image);
     String downloadUrl =
         await storageInstance.ref('$uid/$randomString').getDownloadURL();
-    result['downloadUrl']= downloadUrl; 
-    result['randomString']= randomString; 
-    
+    result['downloadUrl'] = downloadUrl;
+    result['randomString'] = randomString;
+
     return result;
   }
 
@@ -50,4 +51,29 @@ class FunctionUtils {
             .join();
     return randomStr;
   }
+
+  //画像を読み込む
+  static Future<dynamic> getImageFromGallery() async {
+    ImagePicker picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    return pickedFile;
+  }
+
+  //画像をアップロードする
+  static Future<String> upLoadImage(String uid, File image) async {
+    final FirebaseStorage storageInstance = FirebaseStorage.instance;
+    final Reference ref = storageInstance.ref();
+    await ref.child(uid).putFile(image);
+    String downloadUrl = await storageInstance.ref(uid).getDownloadURL();
+    print('image_path: $downloadUrl');
+    return downloadUrl;
+  }
 }
+
+
+
+
+
+
+//future→時間をかけて読み込む,dynamic→どんなデータ形でもいける(あんまりよくない)
+

@@ -1,25 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:memorys/model/post.dart';
+import 'package:memorys/model/stylistpost.dart';
 
-class PostFirestore {
+class StylistPostFirestore {
   static final _firestoreInstance = FirebaseFirestore.instance;
   static final CollectionReference posts =
-      _firestoreInstance.collection('userposts');
+      _firestoreInstance.collection('stylistpost');
 
   // FirebaseFirestore.instance.collection('posts').doc('5XisJiwreAqMtOZKNExb').get();//全部書くとこうなる
 
-  static Future<dynamic> addPost(Post newPost) async {
+  static Future<dynamic> addStylistPost(StylistPost newPost) async {
     try {
       final CollectionReference _userPosts = _firestoreInstance
           .collection('users')
           .doc(newPost.postAccountId)
-          .collection('my_posts');
+          .collection('my_stylist_post');
 
       var result = await posts.add({
-        'content': newPost.content,
-        'image': newPost.postImageUrl,
+        'message_for_customer': newPost.message_for_customer,
+        'before_image': newPost.before_image,
+        'after_image': newPost.after_image,
         'post_account_id': newPost.postAccountId,
-        'created_time': Timestamp.now(),
+        'created_at': Timestamp.now(),
+        'customer_id': "saJX5vYRVDdEIbBsgAESky6QnW22",
       });
       //大きい枠組みのポストに投稿を追加！さらに自分のマイポストにも追加したい！
       _userPosts
@@ -55,6 +58,36 @@ class PostFirestore {
       return postList;
     } on FirebaseException catch (e) {
       print('スタイリスト個人の投稿取得エラー');
+      return null;
+    }
+  }
+
+  static Future<List<StylistPost>?> getUserPosts(String userId) async {
+    List<StylistPost> postList = [];
+
+    try {
+      QuerySnapshot querySnapshot = await _firestoreInstance
+          .collection('users')
+          .doc(userId)
+          .collection('my_posts')
+          .get();
+
+      querySnapshot.docs.forEach((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        StylistPost post = StylistPost(
+            id: doc.id,
+            postAccountId: data['post_account_id'],
+            message_for_customer: data['message_for_customer'],
+            before_image: data['before_image'],
+            after_image: data['after_image'],
+            createdTime: data['created_time'],
+            customer_id: data['customer_id']);
+        postList.add(post);
+      });
+      print('ユーザーの投稿取得完了');
+      return postList;
+    } on FirebaseException catch (e) {
+      print('ユーザーの投稿取得エラー');
       return null;
     }
   }

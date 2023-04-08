@@ -1,14 +1,7 @@
 import 'package:adobe_xd/adobe_xd.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:memorys/model/account.dart';
-import 'package:memorys/model/userpost.dart';
-import 'package:memorys/utils/authentication.dart';
-import 'package:memorys/utils/firestore/shops.dart';
-import 'package:memorys/utils/firestore/userpost.dart';
-import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/time_line/post_page.dart';
-import 'package:memorys/view/time_line/stylist_account_page.dart';
+import 'package:memorys/view/time_line/create_user_post_page.dart';
 
 class StylistsPage extends StatefulWidget {
   const StylistsPage({Key? key}) : super(key: key);
@@ -50,7 +43,7 @@ class _StylistsPageState extends State<StylistsPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PostPage()),
+                MaterialPageRoute(builder: (context) => CreatePostPage()),
               );
             },
             icon: Icon(

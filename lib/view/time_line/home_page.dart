@@ -979,7 +979,7 @@ class _StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class SlideImage extends StatefulWidget {
-  final List<dynamic> beforeimagePhoto;
+  final List<String> beforeimagePhoto;
   const SlideImage({Key? key, required this.beforeimagePhoto})
       : super(key: key);
 

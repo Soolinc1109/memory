@@ -842,8 +842,8 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
 }
 
 class SlideImage extends StatefulWidget {
-  final List<dynamic> beforeimagePhoto;
-  final List<dynamic> afterimagePhoto;
+  final List<String> beforeimagePhoto;
+  final List<String> afterimagePhoto;
   const SlideImage(
       {Key? key, required this.beforeimagePhoto, required this.afterimagePhoto})
       : super(key: key);
@@ -861,16 +861,31 @@ class _SlideImageState extends State<SlideImage> {
         children: [
           Column(
             children: [
-              Container(
-                height: 500,
-                width: screenWidth,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  image: DecorationImage(
-                    image: NetworkImage(beforepath),
-                    fit: BoxFit.cover,
+              Row(
+                children: [
+                  Container(
+                    height: 300,
+                    width: screenWidth / 2,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      image: DecorationImage(
+                        image: NetworkImage(afterpath),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                ),
+                  Container(
+                    height: 300,
+                    width: screenWidth / 2,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      image: DecorationImage(
+                        image: NetworkImage(afterpath),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -921,7 +936,7 @@ class _SlideImageState extends State<SlideImage> {
                   return buildImage(beforepath, afterpath, index, screenWidth);
                 },
                 options: CarouselOptions(
-                  height: 500,
+                  height: 300,
                   initialPage: 0,
                   viewportFraction: 1,
                   onPageChanged: (index, reason) => setState(
@@ -933,7 +948,7 @@ class _SlideImageState extends State<SlideImage> {
               ),
               Positioned(
                 left: 10.0,
-                top: 250, // 中央に配置するため、画像の高さの半分からアイコンの半分を引く
+                top: 150, // 中央に配置するため、画像の高さの半分からアイコンの半分を引く
                 child: IconButton(
                   onPressed: () {
                     _carouselController.previousPage(
@@ -947,7 +962,7 @@ class _SlideImageState extends State<SlideImage> {
               ),
               Positioned(
                 right: 10.0,
-                top: 250, // 中央に配置するため、画像の高さの半分からアイコンの半分を引く
+                top: 150, // 中央に配置するため、画像の高さの半分からアイコンの半分を引く
                 child: IconButton(
                   onPressed: () {
                     _carouselController.nextPage(

@@ -23,7 +23,7 @@ class UserFirestore {
         'image_path': newAccount.imagepath,
         'created_time': Timestamp.now(),
         'updated_time': Timestamp.now(),
-        'is_stylist' : newAccount.is_stylist,
+        'is_stylist': newAccount.is_stylist,
       });
       print('新規ユーザー作成完了');
       return true;
@@ -35,7 +35,7 @@ class UserFirestore {
     }
   }
 
-  static Future<bool> getUser(String uid) async {
+  static Future<dynamic> getUser(String uid) async {
     try {
       DocumentSnapshot documentSnapshot = await users.doc(uid).get();
       Map<String, dynamic>? data =
@@ -52,7 +52,7 @@ class UserFirestore {
       );
       Authentication.myAccount = myAccount;
       print('ユーザー取得完了');
-      return true;
+      return myAccount;
     } on FirebaseException catch (e) {
       print('ユーザー取得エラー');
       print(e);
@@ -87,6 +87,8 @@ class UserFirestore {
       await Future.forEach(accountIds, (String accountId) async {
         var doc = await users.doc(accountId).get();
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        print(data);
+        print(accountId);
         Account postAccount = Account(
             id: accountId,
             name: data['name'],

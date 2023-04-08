@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Post {
-  String id;
+  String posterId;
   String content;
   String postAccountId;
-  List<dynamic>? beforeImage;
-  List<dynamic>? afterImage;
-  Timestamp? createdTime;
+  String? posterImageUrl;
+  String postImageUrl;
+  Timestamp? createdAt;
 
   Post({
-    this.id = '1',
-    this.beforeImage,
-    this.afterImage,
-    this.content = '1',
-    this.postAccountId = '1',
-    this.createdTime,
+    required this.posterId,
+    this.posterImageUrl,
+    required this.postImageUrl,
+    this.content = '',
+    required this.postAccountId,
+    this.createdAt,
   });
 }

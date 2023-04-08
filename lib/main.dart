@@ -1,13 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:memorys/provider/user_provider.dart';
-import 'package:memorys/view/account/account_page.dart';
-import 'package:memorys/view/bottomnavigationbar/screen.dart';
+import 'package:memorys/provider/account_model.dart';
+import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/view/main_page.dart';
 import 'package:memorys/view/startup/login_page.dart';
 import 'package:memorys/view/startup/login_state.dart';
-import 'package:memorys/view/time_line/time_line_page.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -18,14 +16,14 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => LoginState()),
-
         StreamProvider<User?>(
           create: (context) => FirebaseAuth.instance.authStateChanges(),
           initialData: null,
         ),
-
-        // UserProviderを追加
-        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(
+          create: (context) => AccountModel(),
+          child: MyApp(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -38,15 +36,25 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final firebaseUser = Provider.of<User?>(context);
-
+    var aiu = Authentication.currentFirebaseUser!;
+    print(aiu);
+    if (Authentication.currentFirebaseUser != null) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: MainPage(),
+      );
+    }
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: firebaseUser != null ? MainPage() : LoginPage(),
+      home: const LoginPage(),
     );
   }
 }

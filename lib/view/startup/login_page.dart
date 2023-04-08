@@ -6,6 +6,7 @@ import 'package:memorys/utils/firestore/shops.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/main_page.dart';
 import 'package:memorys/view/startup/create_account_page.dart';
+import 'package:memorys/view/startup/createshopaccount/shop_create_account_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -132,6 +133,29 @@ class _LoginPageState extends State<LoginPage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => CreateAccountPage()),
+                          );
+                        },
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(color: Colors.black),
+                  children: [
+                    TextSpan(text: '店舗の方は'),
+                    TextSpan(
+                      text: 'こちら',
+                      style: TextStyle(color: Colors.orange),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ShopCreateAccountPage()),
                           );
                         },
                     ),

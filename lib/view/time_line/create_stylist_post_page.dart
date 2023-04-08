@@ -1,21 +1,23 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memorys/model/account.dart';
-import 'package:memorys/model/userpost.dart';
+import 'package:memorys/model/stylistpost.dart';
 import 'package:memorys/utils/authentication.dart';
-import 'package:memorys/utils/firestore/userpost.dart';
+import 'package:memorys/utils/firestore/stylistposts.dart';
 import 'package:memorys/utils/function_utils.dart';
 
-class PostPage extends StatefulWidget {
-  const PostPage({Key? key}) : super(key: key);
+class CreateStylistPostPage extends StatefulWidget {
+  const CreateStylistPostPage({Key? key}) : super(key: key);
 
   @override
-  _PostPageState createState() => _PostPageState();
+  _CreateStylistPostPageState createState() => _CreateStylistPostPageState();
 }
 
-class _PostPageState extends State<PostPage> {
+class _CreateStylistPostPageState extends State<CreateStylistPostPage> {
   Account myAccount = Authentication.myAccount!;
   File? imageFile;
   ImagePicker picker = ImagePicker();
@@ -28,6 +30,14 @@ class _PostPageState extends State<PostPage> {
     } else {
       return FileImage(imageFile!);
     }
+  }
+
+  Future<String> uploadpostImage(String pid) async {
+    final FirebaseStorage storageInstance = FirebaseStorage.instance;
+    final Reference ref = storageInstance.ref();
+    await ref.child(pid).putFile(imageFile!);
+    String downloadUrl = await storageInstance.ref(pid).getDownloadURL();
+    return downloadUrl;
   }
 
 //入力された情報を知るために用意]
@@ -86,18 +96,46 @@ class _PostPageState extends State<PostPage> {
                     if (is_loading == true) {
                       return;
                     }
+                    String generateNonce([int length = 32]) {
+                      const charset =
+                          '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+                      final random = Random.secure();
+                      final randomStr = List.generate(length,
+                              (_) => charset[random.nextInt(charset.length)])
+                          .join();
+                      return randomStr;
+                    }
+
+                    final rondom = generateNonce();
                     is_loading = true;
                     setState(() {});
                     if (contentController.text.isNotEmpty &&
                         imageFile != null) {
+                      String imagePath = '';
+                      var result = await uploadpostImage(rondom);
+                      imagePath = result;
                       var uploadImage = await FunctionUtils.addPostImage(
                           myAccount.id, imageFile!);
-                      UserPost newPost = UserPost(
+
+                      StylistPost newPost = StylistPost(
                           id: uploadImage['randomString']!,
-                          Image: uploadImage['downloadUrl']!,
-                          content: contentController.text,
+                          poster_image_url: myAccount.imagepath,
+                          message_for_customer: contentController.text,
+                          customer_id: "kbk0SvvyYOdd6wjNmFbhEgRqUCH3",
+                          createdTime: Timestamp.now(),
+                          before_image: [
+                            uploadImage['imageUrl'],
+                            "https://mery.jp/wp-content/uploads/2020/11/thumbnail_1097024-1024x1280.jpg",
+                            "https://mery.jp/wp-content/uploads/2020/11/thumbnail_1097024-1024x1280.jpg"
+                          ],
+                          after_image: [
+                            "https://mery.jp/wp-content/uploads/2020/11/thumbnail_1097024-1024x1280.jpg",
+                            "https://mery.jp/wp-content/uploads/2020/11/thumbnail_1097024-1024x1280.jpg",
+                            "https://mery.jp/wp-content/uploads/2020/11/thumbnail_1097024-1024x1280.jpg"
+                          ],
                           postAccountId: Authentication.myAccount!.id);
-                      var result = await UserPostFirestore.addUserPost(newPost);
+                      var _result =
+                          await StylistPostFirestore.addStylistPost(newPost);
                       if (result == true) {
                         Navigator.pop(context);
                       } else {
