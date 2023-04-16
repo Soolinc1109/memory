@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/time_line/stylists_page.dart';
+import 'package:memorys/view/userPageView/stylists_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class StyleDetail extends StatefulWidget {
@@ -169,7 +169,7 @@ class _StyleDetailState extends State<StyleDetail> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 20.0, vertical: 10.0),
                         child: Text(
-                          'チャット予約',
+                          '予約',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

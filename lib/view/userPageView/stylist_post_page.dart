@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,18 +6,18 @@ import 'package:memorys/model/stylistpost.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/stylistposts.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/time_line/before_after.dart';
-import 'package:memorys/view/time_line/create_user_post_page.dart';
+import 'package:memorys/view/userPageView/before_after.dart';
+import 'package:memorys/view/userPageView/create_user_post_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class StylistPostPage extends StatefulWidget {
+  const StylistPostPage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _StylistPostPageState createState() => _StylistPostPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _StylistPostPageState extends State<StylistPostPage> {
   Account myAccount = Authentication.myAccount!;
   void initState() {
     super.initState();
@@ -241,106 +239,134 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
                 stream: StylistPostFirestore.posts
-                    // .where('customer_id', isEqualTo: myAccount.id)
+                    .where('customer_id', isEqualTo: myAccount.id)
                     // .orderBy('created_at', descending: true)
                     .snapshots(),
                 builder: (context, postSnapshot) {
-                  if (postSnapshot.hasData) {
-                    List<String> postAccountIds = [];
-                    postSnapshot.data!.docs.forEach((doc) {
-                      Map<String, dynamic> data =
-                          doc.data() as Map<String, dynamic>;
-                      if (!postAccountIds.contains(data['post_account_id'])) {
-                        postAccountIds.add(data['post_account_id']);
-                      }
-                    });
-                    return FutureBuilder<Map<String, Account>?>(
-                        future: UserFirestore.getPostUserMap(postAccountIds),
-                        builder: (context, userSnapshot) {
-                          print(userSnapshot);
-                          if (userSnapshot.hasData &&
-                              userSnapshot.connectionState ==
-                                  ConnectionState.done) {
-                            return ListView.builder(
-                                itemCount: postSnapshot.data!.docs.length,
-                                itemBuilder: (context, index) {
-                                  Map<String, dynamic> data =
-                                      postSnapshot.data!.docs[index].data()
-                                          as Map<String, dynamic>;
-                                  StylistPost stylistpost = StylistPost(
-                                      poster_image_url: myAccount.imagepath,
-                                      customer_id: data['customer_id'],
-                                      before_image: data['before_image'],
-                                      message_for_customer:
-                                          data['message_for_customer'],
-                                      after_image: data['after_image'],
-                                      postAccountId: data['post_account_id'],
-                                      createdTime: data['created_at']);
-                                  Account postAccount = userSnapshot
-                                      .data![stylistpost.postAccountId]!;
-                                  print(stylistpost.before_image);
-                                  return Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 0, vertical: 15),
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      BeforeAfterDetail()),
-                                            );
-                                          },
-                                          child: SlideImage(
-                                            beforeimagePhoto:
-                                                stylistpost.before_image,
-                                            afterimagePhoto:
-                                                stylistpost.after_image,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(4.0),
-                                          child: Row(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: CircleAvatar(
-                                                  radius: 29,
-                                                  foregroundImage: NetworkImage(
-                                                      postAccount.imagepath),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8.0),
-                                                child: Container(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    width: 250,
-                                                    child: Text(stylistpost
-                                                        .message_for_customer)),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                });
-                          } else {
-                            return Container();
-                          }
-                        });
-                  } else {
-                    return Container();
+                  if (!postSnapshot.hasData ||
+                      postSnapshot.data!.docs.isEmpty) {
+                    print(postSnapshot);
+                    return Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Container(
+                        child: Text(
+                          'まだカルテがありません',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                      ),
+                    );
                   }
+                  List<String> postAccountIds = [];
+                  postSnapshot.data!.docs.forEach((doc) {
+                    Map<String, dynamic> data =
+                        doc.data() as Map<String, dynamic>;
+                    if (!postAccountIds.contains(data['post_account_id'])) {
+                      postAccountIds.add(data['post_account_id']);
+                    }
+                  });
+                  return FutureBuilder<Map<String, Account>?>(
+                      future: UserFirestore.getPostUserMap(postAccountIds),
+                      builder: (context, userSnapshot) {
+                        print(userSnapshot);
+                        if (!userSnapshot.hasData) {
+                          return Container();
+                        }
+                        if (userSnapshot.connectionState ==
+                            ConnectionState.done) {
+                          // 既存のコード
+                        } else {
+                          return Container();
+                        }
+                        return ListView.builder(
+                            itemCount: postSnapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              Map<String, dynamic> data =
+                                  postSnapshot.data!.docs[index].data()
+                                      as Map<String, dynamic>;
+                              StylistPost stylistpost = StylistPost(
+                                  poster_image_url: myAccount.imagepath,
+                                  customer_id: data['customer_id'],
+                                  before_image: data['before_image'],
+                                  message_for_customer:
+                                      data['message_for_customer'],
+                                  after_image: data['after_image'],
+                                  postAccountId: data['post_account_id'],
+                                  createdTime: data['created_at']);
+                              Account postAccount = userSnapshot
+                                  .data![stylistpost.postAccountId]!;
+                              return postAccount == null
+                                  ? Container(
+                                      child: Text('t'),
+                                    )
+                                  : Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 0, vertical: 15),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        BeforeAfterDetail(
+                                                          beforeimage:
+                                                              stylistpost
+                                                                  .before_image,
+                                                          afterimage:
+                                                              stylistpost
+                                                                  .after_image,
+                                                          stylistpost:
+                                                              stylistpost,
+                                                        )),
+                                              );
+                                            },
+                                            child: SlideImage(
+                                              beforeimagePhoto:
+                                                  stylistpost.before_image,
+                                              afterimagePhoto:
+                                                  stylistpost.after_image,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Row(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: CircleAvatar(
+                                                    radius: 29,
+                                                    foregroundImage:
+                                                        NetworkImage(postAccount
+                                                            .imagepath),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 8.0),
+                                                  child: Container(
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      width: 250,
+                                                      child: Text(stylistpost
+                                                          .message_for_customer)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                            });
+                      });
                 }),
           ),
           SizedBox(

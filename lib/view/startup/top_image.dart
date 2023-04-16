@@ -21,9 +21,6 @@ class _TopImagePageState extends State<TopImagePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(myAccount.id);
-    print(myAccount.name);
-    print(myAccount.is_stylist);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
@@ -98,7 +95,7 @@ class _TopImagePageState extends State<TopImagePage> {
                   child: ElevatedButton(
                       onPressed: () async {
                         if (image != null) {
-                          String imagePath = await FunctionUtils.uploadImage(
+                          final imagePath = await FunctionUtils.uploadImage(
                               myAccount.id, image!);
                           Account updateAccount = Account(
                             id: myAccount.id,
@@ -118,7 +115,7 @@ class _TopImagePageState extends State<TopImagePage> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 255, 184, 77),
+                        backgroundColor: Color.fromARGB(255, 255, 184, 77),
                       ),
                       child: Text(
                         '次へ',

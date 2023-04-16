@@ -1,14 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
-import 'package:memorys/model/post.dart';
 import 'package:memorys/utils/authentication.dart';
-import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/account/account_page.dart';
-import 'package:memorys/view/time_line/create_stylist_post_page.dart';
+import 'package:memorys/view/userPageView/account/account_page.dart';
 import 'package:intl/intl.dart';
-import 'package:memorys/view/time_line/create_user_post_page.dart';
+import 'package:memorys/view/userPageView/create_user_post_page.dart';
 
 class FollowingPage extends StatefulWidget {
   const FollowingPage({Key? key}) : super(key: key);

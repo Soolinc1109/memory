@@ -2,13 +2,23 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
+import 'package:memorys/model/stylistpost.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/time_line/stylists_page.dart';
+import 'package:memorys/view/userPageView/stylists_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class BeforeAfterDetail extends StatefulWidget {
-  const BeforeAfterDetail({Key? key}) : super(key: key);
+  List<dynamic>? beforeimage;
+  List<dynamic>? afterimage;
+
+  StylistPost stylistpost;
+  BeforeAfterDetail({
+    Key? key,
+    required this.beforeimage,
+    required this.afterimage,
+    required this.stylistpost,
+  }) : super(key: key);
 
   @override
   _BeforeAfterDetailState createState() => _BeforeAfterDetailState();
@@ -19,6 +29,7 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
     super.initState();
   }
 
+// Account stylistInfo = UserFirestore.getUser()
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -55,8 +66,9 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
                                       padding: const EdgeInsets.only(top: 8.0),
                                       child: Container(
                                         child: SlideImage(
-                                            beforeimagePhoto: [],
-                                            afterimagePhoto: []),
+                                            beforeimagePhoto:
+                                                widget.beforeimage,
+                                            afterimagePhoto: widget.afterimage),
                                       ),
                                     ),
                                   ],
@@ -87,9 +99,9 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            '【ソフトツイストパーマ】 サーフアップパング ショートヘア',
+                            widget.stylistpost.message_for_customer,
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 17,
                               color: Colors.black,
                             ),
                           ),
@@ -100,9 +112,9 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
                           child: Row(
                             children: [
                               Text(
-                                '￥14,500',
+                                'カット/￥4,500',
                                 style: TextStyle(
-                                  fontSize: 25,
+                                  fontSize: 23,
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -135,7 +147,7 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
                         child: Image.network(
-                          'https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E3%80%90%E3%82%B7%E3%83%A7%E3%83%BC%E3%83%88%E7%B7%A8%E3%80%91%E6%AF%9B%E9%87%8F%E3%81%8B%E3%82%99%E5%A4%9A%E3%81%84%E3%81%BB%E3%82%9A%E3%81%A3%E3%81%A1%E3%82%83%E3%82%8A%E3%81%95%E3%82%93%E3%81%93%E3%81%9D%E4%BC%BC%E5%90%88%E3%81%86%E2%99%AA%E5%A4%8F%E3%82%89%E3%81%97%E3%81%84%E9%AB%AA%E5%9E%8B5%E3%81%A4%20_%204MEEE.jpeg?alt=media&token=a20fce81-bef0-44d2-80f6-03b01b6c2a41',
+                          "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/noimage.png?alt=media&token=b95c16cf-7ca3-4dc2-9b4f-3fec6cc22bf2",
                           width: 80.0,
                           height: 80.0,
                           fit: BoxFit.cover,
@@ -156,7 +168,7 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
                               ),
                               SizedBox(height: 5.0),
                               Text(
-                                '牛島　優香',
+                                "上田　輝",
                                 style: TextStyle(fontSize: 14.0),
                               ),
                             ],
@@ -171,7 +183,7 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 20.0, vertical: 10.0),
                         child: Text(
-                          'チャット予約',
+                          'スタイリスト予約',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -842,8 +854,8 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
 }
 
 class SlideImage extends StatefulWidget {
-  final List<String> beforeimagePhoto;
-  final List<String> afterimagePhoto;
+  final List<dynamic>? beforeimagePhoto;
+  final List<dynamic>? afterimagePhoto;
   const SlideImage(
       {Key? key, required this.beforeimagePhoto, required this.afterimagePhoto})
       : super(key: key);
@@ -917,22 +929,10 @@ class _SlideImageState extends State<SlideImage> {
                 carouselController: _carouselController,
                 itemCount: 5,
                 itemBuilder: (context, index, realIndex) {
-                  var beforeimagePhoto = [
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E5%A4%A7%E4%BA%BA%E5%8F%AF%E6%84%9B%E3%81%84%E3%83%9F%E3%83%86%E3%82%99%E3%82%A3%E2%99%A1%EF%BD%9Cto_na%20%E8%A1%A8%E5%8F%82%E9%81%93%EF%BC%88%E3%83%88%E3%82%A5%E3%83%BC%E3%83%8A%E3%82%AA%E3%83%A2%E3%83%86%E3%82%B5%E3%83%B3%E3%83%88%E3%82%99%E3%82%A6%EF%BC%89%E6%AB%BB%E6%9C%A8%E8%A3%95%E7%B4%80%E3%81%AE%E9%AB%AA%E5%9E%8B%E3%83%BB%E3%83%98%E3%82%A2%E3%82%B9%E3%82%BF%E3%82%A4%E3%83%AB%E3%83%BB%E3%83%98%E3%82%A2%E3%82%AB%E3%82%BF%E3%83%AD%E3%82%AF%E3%82%99%E6%83%85%E5%A0%B1%EF%BD%9CYahoo!%20BEAUTY%EF%BC%88%E3%83%A4%E3%83%95%E3%83%BC%E3%83%92%E3%82%99%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%BC%EF%BC%89.webp?alt=media&token=b33ecb9b-9d40-4741-9d06-8cf964639b6e",
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E5%8F%AF%E6%84%9B%E3%81%84%E3%81%AE%E3%81%AB%E5%A4%A7%E4%BA%BA%E3%81%A3%E3%81%BB%E3%82%9A%E3%81%84%E3%80%82%E3%83%9F%E3%83%86%E3%82%99%E3%82%A3%E3%82%A2%E3%83%A0%E3%83%98%E3%82%A2%E3%81%AE%E9%AB%AA%E5%9E%8B%E3%81%A6%E3%82%99%E5%8F%B6%E3%81%88%E3%82%8B%E5%A5%B3%E5%BA%A6%E4%B8%8A%E3%81%8B%E3%82%99%E3%82%8B%E4%BB%95%E4%B8%8A%E3%81%8B%E3%82%99%E3%82%8A%E3%82%92%E3%81%93%E3%82%99%E7%B4%B9%E4%BB%8B%20_%20folk.png?alt=media&token=5c81d034-056c-4723-88c5-c4acc701053b",
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E5%A4%A7%E4%BA%BA%E3%81%AB%E5%90%88%E3%81%86%E9%BB%92%E9%AB%AA%E3%83%9E%E3%83%83%E3%82%B7%E3%83%A5%E3%82%A6%E3%83%AB%E3%83%95%E7%89%B9%E9%9B%86%E3%80%82%E5%B0%8F%E9%A1%94%E8%A6%8B%E3%81%9B%E3%82%92%E5%8F%B6%E3%81%88%E3%82%8B%E7%94%98%E8%BE%9B%E3%83%98%E3%82%A2%E3%82%92%E3%83%AC%E3%83%B3%E3%82%AF%E3%82%99%E3%82%B9%E5%88%A5%E3%81%A6%E3%82%99%E3%81%93%E3%82%99%E7%B4%B9%E4%BB%8B%20_%20folk.png?alt=media&token=e546aaf4-e66a-46cf-bbbf-5c46f7345556",
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E3%80%902023%E5%B9%B4%E6%98%A5%E3%80%91%E3%83%9F%E3%83%86%E3%82%99%E3%82%A3%E3%82%A2%E3%83%A0%20%E3%81%B2%E3%81%97%E5%BD%A2%E3%83%9B%E3%82%99%E3%83%95%E3%82%99%E3%81%AE%E9%AB%AA%E5%9E%8B%E3%83%BB%E3%83%98%E3%82%A2%E3%82%A2%E3%83%AC%E3%83%B3%E3%82%B7%E3%82%99%EF%BD%9C%E4%BA%BA%E6%B0%97%E9%A0%86%EF%BD%9C%E3%83%9B%E3%83%83%E3%83%88%E3%83%98%E3%82%9A%E3%83%83%E3%83%8F%E3%82%9A%E3%83%BC%E3%83%92%E3%82%99%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%BC%20%E3%83%98%E3%82%A2%E3%82%B9%E3%82%BF%E3%82%A4%E3%83%AB%E3%83%BB%E3%83%98%E3%82%A2%E3%82%AB%E3%82%BF%E3%83%AD%E3%82%AF%E3%82%99.jpeg?alt=media&token=d4f6c27e-6bdb-4095-882b-f5bfe91713ca",
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E3%80%8C%E7%9B%AE%E6%A8%99%E3%81%AF%E5%AE%89%E9%81%94%E7%A5%90%E5%AE%9F%E3%80%8D%E4%BA%BA%E6%B0%97%E3%82%A2%E3%83%8A%E3%80%90%E5%BC%98%E4%B8%AD%E7%B6%BE%E9%A6%99%E3%80%91%E3%81%AE%E7%BE%8E%E5%AE%B9%E3%82%B9%E3%82%A4%E3%83%83%E3%83%81%E3%81%A8%E3%81%AF%EF%BC%9F%E3%80%90%E3%83%92%E3%82%99%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%8B%E3%83%A5%E3%83%BC%E3%82%B9%E3%80%91%EF%BD%9C%E7%BE%8E%E5%AE%B9%E3%83%A1%E3%83%86%E3%82%99%E3%82%A3%E3%82%A2VOCE%EF%BC%88%E3%82%A6%E3%82%99%E3%82%A9%E3%83%BC%E3%83%81%E3%82%A7%EF%BC%89.jpeg?alt=media&token=5a321559-20af-415b-948e-48c6b7fa45d5",
-                  ];
-                  var afterimagePhoto = [
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E5%A4%A7%E4%BA%BA%E5%8F%AF%E6%84%9B%E3%81%84%E3%83%9F%E3%83%86%E3%82%99%E3%82%A3%E2%99%A1%EF%BD%9Cto_na%20%E8%A1%A8%E5%8F%82%E9%81%93%EF%BC%88%E3%83%88%E3%82%A5%E3%83%BC%E3%83%8A%E3%82%AA%E3%83%A2%E3%83%86%E3%82%B5%E3%83%B3%E3%83%88%E3%82%99%E3%82%A6%EF%BC%89%E6%AB%BB%E6%9C%A8%E8%A3%95%E7%B4%80%E3%81%AE%E9%AB%AA%E5%9E%8B%E3%83%BB%E3%83%98%E3%82%A2%E3%82%B9%E3%82%BF%E3%82%A4%E3%83%AB%E3%83%BB%E3%83%98%E3%82%A2%E3%82%AB%E3%82%BF%E3%83%AD%E3%82%AF%E3%82%99%E6%83%85%E5%A0%B1%EF%BD%9CYahoo!%20BEAUTY%EF%BC%88%E3%83%A4%E3%83%95%E3%83%BC%E3%83%92%E3%82%99%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%BC%EF%BC%89.webp?alt=media&token=b33ecb9b-9d40-4741-9d06-8cf964639b6e",
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E5%8F%AF%E6%84%9B%E3%81%84%E3%81%AE%E3%81%AB%E5%A4%A7%E4%BA%BA%E3%81%A3%E3%81%BB%E3%82%9A%E3%81%84%E3%80%82%E3%83%9F%E3%83%86%E3%82%99%E3%82%A3%E3%82%A2%E3%83%A0%E3%83%98%E3%82%A2%E3%81%AE%E9%AB%AA%E5%9E%8B%E3%81%A6%E3%82%99%E5%8F%B6%E3%81%88%E3%82%8B%E5%A5%B3%E5%BA%A6%E4%B8%8A%E3%81%8B%E3%82%99%E3%82%8B%E4%BB%95%E4%B8%8A%E3%81%8B%E3%82%99%E3%82%8A%E3%82%92%E3%81%93%E3%82%99%E7%B4%B9%E4%BB%8B%20_%20folk.png?alt=media&token=5c81d034-056c-4723-88c5-c4acc701053b",
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E5%A4%A7%E4%BA%BA%E3%81%AB%E5%90%88%E3%81%86%E9%BB%92%E9%AB%AA%E3%83%9E%E3%83%83%E3%82%B7%E3%83%A5%E3%82%A6%E3%83%AB%E3%83%95%E7%89%B9%E9%9B%86%E3%80%82%E5%B0%8F%E9%A1%94%E8%A6%8B%E3%81%9B%E3%82%92%E5%8F%B6%E3%81%88%E3%82%8B%E7%94%98%E8%BE%9B%E3%83%98%E3%82%A2%E3%82%92%E3%83%AC%E3%83%B3%E3%82%AF%E3%82%99%E3%82%B9%E5%88%A5%E3%81%A6%E3%82%99%E3%81%93%E3%82%99%E7%B4%B9%E4%BB%8B%20_%20folk.png?alt=media&token=e546aaf4-e66a-46cf-bbbf-5c46f7345556",
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E3%80%902023%E5%B9%B4%E6%98%A5%E3%80%91%E3%83%9F%E3%83%86%E3%82%99%E3%82%A3%E3%82%A2%E3%83%A0%20%E3%81%B2%E3%81%97%E5%BD%A2%E3%83%9B%E3%82%99%E3%83%95%E3%82%99%E3%81%AE%E9%AB%AA%E5%9E%8B%E3%83%BB%E3%83%98%E3%82%A2%E3%82%A2%E3%83%AC%E3%83%B3%E3%82%B7%E3%82%99%EF%BD%9C%E4%BA%BA%E6%B0%97%E9%A0%86%EF%BD%9C%E3%83%9B%E3%83%83%E3%83%88%E3%83%98%E3%82%9A%E3%83%83%E3%83%8F%E3%82%9A%E3%83%BC%E3%83%92%E3%82%99%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%BC%20%E3%83%98%E3%82%A2%E3%82%B9%E3%82%BF%E3%82%A4%E3%83%AB%E3%83%BB%E3%83%98%E3%82%A2%E3%82%AB%E3%82%BF%E3%83%AD%E3%82%AF%E3%82%99.jpeg?alt=media&token=d4f6c27e-6bdb-4095-882b-f5bfe91713ca",
-                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/%E3%80%8C%E7%9B%AE%E6%A8%99%E3%81%AF%E5%AE%89%E9%81%94%E7%A5%90%E5%AE%9F%E3%80%8D%E4%BA%BA%E6%B0%97%E3%82%A2%E3%83%8A%E3%80%90%E5%BC%98%E4%B8%AD%E7%B6%BE%E9%A6%99%E3%80%91%E3%81%AE%E7%BE%8E%E5%AE%B9%E3%82%B9%E3%82%A4%E3%83%83%E3%83%81%E3%81%A8%E3%81%AF%EF%BC%9F%E3%80%90%E3%83%92%E3%82%99%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%8B%E3%83%A5%E3%83%BC%E3%82%B9%E3%80%91%EF%BD%9C%E7%BE%8E%E5%AE%B9%E3%83%A1%E3%83%86%E3%82%99%E3%82%A3%E3%82%A2VOCE%EF%BC%88%E3%82%A6%E3%82%99%E3%82%A9%E3%83%BC%E3%83%81%E3%82%A7%EF%BC%89.jpeg?alt=media&token=5a321559-20af-415b-948e-48c6b7fa45d5",
-                  ];
-                  final beforepath = beforeimagePhoto[index];
-                  final afterpath = afterimagePhoto[index];
+                  var beforeimagePhoto = widget.beforeimagePhoto;
+                  var afterimagePhoto = widget.afterimagePhoto;
+                  final beforepath = beforeimagePhoto![index];
+                  final afterpath = afterimagePhoto![index];
                   return buildImage(beforepath, afterpath, index, screenWidth);
                 },
                 options: CarouselOptions(

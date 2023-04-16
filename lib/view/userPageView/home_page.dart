@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/time_line/calendar.dart';
-import 'package:memorys/view/time_line/style_detail_page.dart';
+import 'package:memorys/view/userPageView/calendar.dart';
+import 'package:memorys/view/userPageView/style_detail_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class TimeLinePage extends StatefulWidget {

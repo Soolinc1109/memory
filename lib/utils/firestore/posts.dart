@@ -19,7 +19,7 @@ class PostFirestore {
         'content': newPost.content,
         'image': newPost.postImageUrl,
         'post_account_id': newPost.postAccountId,
-        'created_time': Timestamp.now(),
+        'created_time': newPost.createdAt,
       });
       //大きい枠組みのポストに投稿を追加！さらに自分のマイポストにも追加したい！
       _userPosts
@@ -46,16 +46,54 @@ class PostFirestore {
           posterId: doc.id,
           content: data['content'],
           postAccountId: data['post_account_id'],
-          createdAt: data['created_time'],
+          createdAt: (data['created_time'] as Timestamp).toDate(),
           postImageUrl: data['image'],
         );
         postList.add(post);
+        print(postList);
       });
-      print('スタイリスト個人の投稿取得完了');
+      print('個人の投稿取得完了');
       return postList;
     } on FirebaseException catch (e) {
-      print('スタイリスト個人の投稿取得エラー');
+      print('個人の投稿取得エラー');
       return null;
     }
+  }
+
+  static Future<List<String>> getAllPostIds(String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestoreInstance
+          .collection('users')
+          .doc(userId)
+          .collection('my_posts')
+          .get();
+      List<String> postIds = [];
+
+      for (var doc in querySnapshot.docs) {
+        String postId = doc.id;
+        postIds.add(postId);
+      }
+      print(postIds);
+      return postIds;
+    } on FirebaseException catch (e) {
+      print('投稿情報の取得エラー: $e');
+      return [];
+    }
+  }
+
+  static Future<Map<DateTime, String>> createImageMap(String userId) async {
+    Map<DateTime, String> imageMap = {};
+
+    List<String> ids = await getAllPostIds(userId);
+    // List<String> ids = await getAllPostIds();
+    List<Post>? posts = await PostFirestore.getPostFromIds(ids);
+
+    if (posts != null) {
+      posts.forEach((post) {
+        imageMap[post.createdAt] = post.postImageUrl;
+      });
+    }
+    print(posts);
+    return imageMap;
   }
 }

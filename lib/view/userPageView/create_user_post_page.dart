@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memorys/model/account.dart';
 import 'dart:math';
-
 import 'package:memorys/model/post.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/function_utils.dart';
-
 import '../../utils/firestore/posts.dart';
 
 class CreatePostPage extends StatefulWidget {
@@ -28,6 +25,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
   File? image;
   ImagePicker picker = ImagePicker();
   ImageProvider? imageProvider;
+
+  bool onpressed = false;
+  bool loading = false; // Add this line to create a new loading variable
+  void rebuild() {
+    setState(() {});
+  }
 
   void updateImageProvider() {
     if (image == null) {
@@ -53,11 +56,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   Account myAccount = Authentication.myAccount!;
 
-  bool onpressed = false;
-  void rebuild() {
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,12 +74,10 @@ class _CreatePostPageState extends State<CreatePostPage> {
             Padding(
               padding: const EdgeInsets.only(top: 8.0, right: 8),
               child: ElevatedButton(
-                onPressed: onpressed == true
+                onPressed: loading
                     ? null
                     : () async {
-                        setState(() {
-                          onpressed = true;
-                        });
+                        // Check if loading is false before executing the code
                         String generateNonce([int length = 32]) {
                           const charset =
                               '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
@@ -95,26 +91,54 @@ class _CreatePostPageState extends State<CreatePostPage> {
                         }
 
                         final rondom = generateNonce();
-
-                        if (contentController.text.isNotEmpty) {
+                        if (contentController.text.isNotEmpty &&
+                            image != null) {
+                          setState(() {
+                            loading =
+                                true; // Set loading to true at the beginning of the onPressed callback
+                          });
+                          setState(() {
+                            onpressed = true;
+                          });
                           String imagePath = '';
-                          if (image == null) {
-                            imagePath = "";
-                          } else {
-                            var result = await uploadpostImage(rondom);
-                            imagePath = result;
-                          }
-                          Post newPost = Post(
+
+                          var _result = await uploadpostImage(rondom);
+                          imagePath = _result;
+
+                          final newPost = Post(
                               postAccountId: myAccount.id,
                               content: contentController.text,
-                              createdAt: Timestamp.now(),
+                              createdAt: (Timestamp.now()).toDate(),
                               posterImageUrl: myAccount.imagepath,
                               postImageUrl: imagePath,
                               posterId: 'posterId');
                           final result = await PostFirestore.addPost(newPost);
                           if (result == true) {
-                            Navigator.of(context).pop();
+                            setState(() {
+                              HapticFeedback.heavyImpact();
+                              loading =
+                                  false; // Set loading back to false at the end of the onPressed callback
+                            });
+                            Navigator.pop(context, true);
                           }
+                        } else {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false, // ダイアログ外をタップしても閉じない
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('テキスト、画像を埋めて下さい'),
+                                actions: <Widget>[
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(); // ダイアログを閉じる
+                                    },
+                                    child: Text('埋める'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         }
                         setState(() {
                           HapticFeedback.heavyImpact();
@@ -129,7 +153,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     Radius.circular(35),
                   ),
                 )),
-                child: const Text('Tweet'),
+                child: loading && contentController.text.isNotEmpty
+                    ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                    : const Text('Tweet'), // Show 'Tweet' text when not loading
               ),
             )
           ],
@@ -175,13 +203,15 @@ class _CreatePostPageState extends State<CreatePostPage> {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: image == null
-                ? const CircleAvatar(child: Icon(Icons.photo))
-                : Image(
-                    image: imageProvider!,
-                  ),
-          ),
+              padding: const EdgeInsets.all(15.0),
+              child: image == null
+                  ? const CircleAvatar(child: Icon(Icons.photo))
+                  : Image.file(
+                      image!,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    )),
         )
       ]),
     );

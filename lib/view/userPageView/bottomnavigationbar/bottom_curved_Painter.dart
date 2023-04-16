@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memorys/view/bottomnavigationbar/centered_elasticIn_curve.dart';
+import 'package:memorys/view/userPageView/bottomnavigationbar/centered_elasticIn_curve.dart';
 
 class BackgroundCurvePainter extends CustomPainter {
   static const _radiusTop = 100.0;

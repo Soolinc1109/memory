@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memorys/view/account/account_page.dart';
-import 'package:memorys/view/time_line/calendar.dart';
-import 'package:memorys/view/time_line/home_page.dart';
-import 'package:memorys/view/time_line/time_line_page.dart';
+import 'package:memorys/view/userPageView/account/account_page.dart';
+import 'package:memorys/view/userPageView/calendar.dart';
+import 'package:memorys/view/userPageView/home_page.dart';
+import 'package:memorys/view/userPageView/time_line_page.dart';
 
 class Screen extends StatefulWidget {
   const Screen({Key? key}) : super(key: key);

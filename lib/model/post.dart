@@ -6,7 +6,7 @@ class Post {
   String postAccountId;
   String? posterImageUrl;
   String postImageUrl;
-  Timestamp? createdAt;
+  DateTime createdAt;
 
   Post({
     required this.posterId,
@@ -14,6 +14,6 @@ class Post {
     required this.postImageUrl,
     this.content = '',
     required this.postAccountId,
-    this.createdAt,
+    required this.createdAt,
   });
 }

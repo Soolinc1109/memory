@@ -1,9 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:memorys/model/shop.dart';
+import 'package:memorys/model/shop/shop.dart';
 import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/shops.dart';
-import 'package:memorys/view/time_line/style_detail_page.dart';
+import 'package:memorys/view/userPageView/style_detail_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,7 +34,6 @@ class _ShopPageState extends State<ShopPage> {
                 return Center(child: Text('データを取得できませんでした。'));
               } else {
                 final Shop shop = snapshot.data![0];
-
                 return Column(
                   children: [
                     Expanded(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memorys/view/bottomnavigationbar/screen.dart';
+import 'package:memorys/view/userPageView/bottomnavigationbar/screen.dart';
 import 'package:memorys/view/startup/signup_clear.dart';
 
 class PassWardPage extends StatefulWidget {

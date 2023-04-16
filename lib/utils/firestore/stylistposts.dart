@@ -22,7 +22,7 @@ class StylistPostFirestore {
         'after_image': newPost.after_image,
         'post_account_id': newPost.postAccountId,
         'created_at': Timestamp.now(),
-        'customer_id': "saJX5vYRVDdEIbBsgAESky6QnW22",
+        'customer_id': newPost.customer_id,
       });
       //大きい枠組みのポストに投稿を追加！さらに自分のマイポストにも追加したい！
       _userPosts

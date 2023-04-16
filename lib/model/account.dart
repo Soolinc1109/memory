@@ -2,32 +2,47 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Account {
-  // フィールド（変数）を定義　＝＞　属性どんなもの？
   String id;
   String name;
   String imagepath;
+  String? favorite_image_0;
+  String? favorite_image_1;
+  String? favorite_image_2;
+  String? favorite_image_3;
+  String? favorite_image_4;
   String selfIntroduction;
   String userId;
   String follow;
   String follower;
   bool is_stylist;
+  bool is_owner;
   Timestamp? createdTime;
   Timestamp? updatedTime;
-//メソッドの定
-//コンストラクタの生成
-//クラスの時点で、詳細な情報を初期化しておくのはよくない、ので、初期化なしで定義したい！
-//けれど何も定義してない状態では使えない、
-//コンストラクタ＝何もわかっていないあやふやな状態を定義しつつ、インスタンス化したい！（インスタンス化しつつ値を入れる！）
+
+  List<String?> get favoriteImages => [
+        favorite_image_0,
+        favorite_image_1,
+        favorite_image_2,
+        favorite_image_3,
+        favorite_image_4,
+      ];
 
   Account(
       {this.id = '',
       this.name = '',
-      this.imagepath = '',
+      this.imagepath =
+          'https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/noimage.png?alt=media&token=b95c16cf-7ca3-4dc2-9b4f-3fec6cc22bf2',
+      this.favorite_image_0 = '',
+      this.favorite_image_1 = '',
+      this.favorite_image_2 = '',
+      this.favorite_image_3 = '',
+      this.favorite_image_4 = '',
       this.selfIntroduction = '',
       this.userId = '',
       this.follow = '',
       this.follower = '',
       this.is_stylist = false,
+      this.is_owner = false,
       this.createdTime,
       this.updatedTime});
 }

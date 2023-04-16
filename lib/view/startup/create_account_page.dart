@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/bottomnavigationbar/screen.dart';
-import 'package:memorys/view/startup/passward.dart';
 import 'package:memorys/view/startup/signup_clear.dart';
 
 class CreateAccountPage extends StatefulWidget {
@@ -88,21 +86,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           email: emailController.text,
                           pass: passController.text);
                       if (result is UserCredential) {
-                        print(result);
-                        // var results =
-                        //     await UserFirestore.getUser(result.user!.uid);
-                        // print('=========');
-                        //resultがusercredential型だったら（ユーザーができてたら）
                         Account newAccount = Account(
                           id: result.user!.uid,
                           is_stylist: false,
-                          //新規登録アカウントのユーザーUIDをとってきている
+                          is_owner: false,
                         );
-
                         Authentication.myAccount = newAccount;
-                        print(newAccount.id);
-                        print(Authentication.myAccount);
-
                         var _result = await UserFirestore.setUser(newAccount);
                         if (_result == true) {
                           // && results == true

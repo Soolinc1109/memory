@@ -1,15 +1,18 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/model/stylistpost.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/stylistposts.dart';
-import 'package:memorys/utils/firestore/users.dart';
+import 'package:memorys/view/userPageView/account/edit_account_page.dart';
+import 'package:memorys/view/shopview/shop_preview_page.dart';
 import 'package:memorys/view/startup/login_page.dart';
-import 'package:memorys/view/time_line/shop_page.dart';
+import 'package:memorys/view/userPageView/before_after.dart';
+import 'package:memorys/view/userPageView/shop_page.dart';
+import 'package:memorys/view/userPageView/upload_favorite_hair_page.dart';
+
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 void main() => runApp(MyApp());
@@ -22,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: AccountPage(),
+      home: ShopAccountPage(),
 //      home: const NestedScrollViewSamplePage(),
     );
   }
@@ -39,33 +42,52 @@ const _tabs = <Widget>[
     Icons.content_cut,
     color: Colors.black,
   )),
-  Tab(
-      icon: Icon(
-    Icons.content_cut,
-    color: Colors.black,
-  )),
 ];
 
 /// Sticky TabBarを実現するページ
-class AccountPage extends StatefulWidget {
+class ShopAccountPage extends StatefulWidget {
   bool? isFollwing;
   // final Account? userInfo;
-  AccountPage({Key? key, this.isFollwing}) : super(key: key);
+  ShopAccountPage({Key? key, this.isFollwing}) : super(key: key);
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  State<ShopAccountPage> createState() => _ShopAccountPageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class _ShopAccountPageState extends State<ShopAccountPage> {
+  final String _text =
+      "「目に見えない美しさ」がテーマのヘアサロン。視覚だけなく、時間、空間、音、香り、すべてをデザイン。五感で満足していただける心地よいサロンをつくりたいというオーナーさんの思いを形にしました。カット面や椅子は、北欧の名作家具をセレクト。";
+  bool _showFullText = false;
+  bool _showMoreButton = false;
   Account myAccount = Authentication.myAccount!;
+  bool _isFirstBuild = true;
+
   List<StylistPost> _posts = [];
 
   static final _firestoreInstance = FirebaseFirestore.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isFirstBuild) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _isFirstBuild = false;
+        });
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
+    List<String>? favoriteimage = [
+      myAccount.favorite_image_0!,
+      myAccount.favorite_image_1!,
+      myAccount.favorite_image_2!,
+      myAccount.favorite_image_3!,
+      myAccount.favorite_image_4!,
+    ];
     return Scaffold(
       key: _scaffoldKey,
-      drawer: Drawer(
+      endDrawer: Drawer(
         // ここでDrawerウィジェットをカスタマイズします。
         child: ListView(
           padding: EdgeInsets.zero,
@@ -77,22 +99,66 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
             ListTile(
-              title: Text('プロフィール編集'),
-              onTap: () {
+              title: Text('お店情報の編集'),
+              onTap: () async {
+                var result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UserUpdatePage(
+                            account: myAccount,
+                          )),
+                );
+                if (result == true) {
+                  setState(() {});
+                }
                 // ここでタップ時の処理を記述します。
               },
             ),
             ListTile(
-              title: Text('ログアウト'),
+              title: Text('ショッププレビュー'),
               onTap: () {
-                Authentication.signOut();
-                while (Navigator.canPop(context)) {
-                  Navigator.pop(context);
-                }
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => LoginPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ShopPreviewPage()),
+                );
               },
             ),
+            ListTile(
+              title: Text('ログアウト'),
+              onTap: () async {
+                bool shouldLogout = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('確認'),
+                      content: Text('本当にログアウトしますか？'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('いいえ'),
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                        ),
+                        TextButton(
+                          child: Text('はい'),
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+                if (shouldLogout) {
+                  Authentication.signOut();
+                  while (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  }
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                }
+              },
+            )
           ],
         ),
       ),
@@ -102,12 +168,28 @@ class _AccountPageState extends State<AccountPage> {
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.black, size: 30),
           backgroundColor: Colors.white,
-          title: Text(
-            "",
-            style: TextStyle(
-                color: Color.fromARGB(255, 0, 0, 0),
-                fontSize: 25,
-                fontWeight: FontWeight.bold),
+          title: Row(
+            children: [
+              CircleAvatar(
+                radius: 31,
+                foregroundImage: NetworkImage(
+                    "https://hairmake-earth.com/wp-content/uploads/2019/01/fad3656985da0929df280adcd31000c1.jpg"),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  //ステイトフルウィジェットのクラスをステイトのクラスで使おうとするときにwidget.が必要！
+                  "Earth_authentic",
+                  style: TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -120,56 +202,74 @@ class _AccountPageState extends State<AccountPage> {
                 delegate: SliverChildListDelegate(
                   [
                     Container(
+                      color: Colors.white,
                       padding: EdgeInsets.only(right: 15, left: 15, top: 20),
                       height: 120,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Container(
+                              height: 100,
+                              width: double.infinity,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 41,
-                                    foregroundImage:
-                                        NetworkImage(myAccount.imagepath),
+                                  LayoutBuilder(
+                                    builder: (BuildContext context,
+                                        BoxConstraints constraints) {
+                                      final textPainter = TextPainter(
+                                          text: TextSpan(
+                                            text: _text,
+                                            style: DefaultTextStyle.of(context)
+                                                .style
+                                                .copyWith(height: 1),
+                                          ),
+                                          textDirection: TextDirection.ltr,
+                                          maxLines: 2)
+                                        ..layout(
+                                          maxWidth: constraints.maxWidth,
+                                        );
+
+                                      if (!_showFullText &&
+                                          !_showMoreButton &&
+                                          textPainter.didExceedMaxLines) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                          setState(() {
+                                            _showMoreButton = true;
+                                          });
+                                        });
+                                      }
+
+                                      return Text(
+                                        _text,
+                                        maxLines: _showFullText ? 6 : 3,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(height: 1),
+                                      );
+                                    },
                                   ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          //ステイトフルウィジェットのクラスをステイトのクラスで使おうとするときにwidget.が必要！
-                                          myAccount.name,
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
+                                  if (_showMoreButton)
+                                    TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _showFullText = !_showFullText;
+                                        });
+                                      },
+                                      child: Text(
+                                        _showFullText ? '閉じる' : 'もっと見る',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppColors.secondaryColor,
                                         ),
                                       ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          "myAccount.selfIntroductiona",
-                                          textAlign: TextAlign.start,
-                                          maxLines: 3, // 3行まで表示（適切な行数に変更してください）
-                                          overflow: TextOverflow
-                                              .ellipsis, // もしテキストがはみ出す場合、末尾に '...' を表示
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
                                 ],
                               ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
@@ -192,7 +292,7 @@ class _AccountPageState extends State<AccountPage> {
                       ),
                       Tab(
                         child: Text(
-                          '予約状況',
+                          'スタイリスト一覧',
                           style: TextStyle(
                             color: Colors.black,
                           ),
@@ -221,7 +321,7 @@ class _AccountPageState extends State<AccountPage> {
                                 Padding(
                                   padding: const EdgeInsets.all(5.0),
                                   child: Text(
-                                    "あなたがなりたい髪型",
+                                    "トップフロントビュー",
                                     style: TextStyle(
                                       fontSize: 17, // 文字サイズを大きくする (例: 24)
                                       fontWeight: FontWeight.bold, // 文字を太くする
@@ -230,7 +330,23 @@ class _AccountPageState extends State<AccountPage> {
                                 )
                               ],
                             ),
-                            SlideImage(beforeimagePhoto: []),
+                            InkWell(
+                                onTap: () async {
+                                  var result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            UploadFavoriteHairPage(
+                                              account: myAccount,
+                                            )),
+                                  );
+                                  if (result == true) {
+                                    setState(() {});
+                                  }
+                                  // ここでタップ時の処理を記述します。
+                                },
+                                child: SlideImage(
+                                    favoriteHairImages: favoriteimage)),
                             SizedBox(
                               height: 10,
                             ),
@@ -252,13 +368,16 @@ class _AccountPageState extends State<AccountPage> {
                               height: 100,
                               width: 350,
                               child: StreamBuilder<QuerySnapshot>(
-                                  stream: StylistPostFirestore.posts
-                                      .where('customer_id',
-                                          isEqualTo: myAccount.id)
-                                      // .orderBy('created_at', descending: true)
-                                      .snapshots(),
+                                  stream: _isFirstBuild
+                                      ? StylistPostFirestore.posts
+                                          .where('customer_id',
+                                              isEqualTo: myAccount.id)
+                                          // .orderBy('created_at', descending: true)
+                                          .snapshots()
+                                      : null,
                                   builder: (context, postSnapshot) {
-                                    if (postSnapshot.hasData) {
+                                    if (postSnapshot.hasData &&
+                                        !postSnapshot.data!.docs.isEmpty) {
                                       List<String> postAccountIds = [];
                                       postSnapshot.data!.docs.forEach((doc) {
                                         Map<String, dynamic> data =
@@ -301,64 +420,79 @@ class _AccountPageState extends State<AccountPage> {
                                                 stylistpost.after_image;
 
                                             return beforeimageUrl != null
-                                                ? Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 4.0,
-                                                            right: 5.0,
-                                                            bottom: 5.0,
-                                                            top: 5.0),
-                                                    child: Column(
-                                                      children: [
-                                                        // index == 0
-                                                        //     ? Container(
-                                                        //         height: 50,
-                                                        //         width: 50,
-                                                        //       )
-                                                        //     :
-                                                        ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.0),
-                                                          child: Container(
-                                                            width: 80,
-                                                            height: 80,
-                                                            child: Row(
-                                                              children: [
-                                                                AspectRatio(
-                                                                  aspectRatio:
-                                                                      0.5,
-                                                                  child: Image
-                                                                      .network(
-                                                                    beforeimageUrl[
-                                                                        index],
-                                                                    fit: BoxFit
-                                                                        .cover,
+                                                ? InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                BeforeAfterDetail(
+                                                                  beforeimage:
+                                                                      stylistpost
+                                                                          .before_image,
+                                                                  afterimage:
+                                                                      stylistpost
+                                                                          .after_image,
+                                                                  stylistpost:
+                                                                      stylistpost,
+                                                                )),
+                                                      );
+                                                    },
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 4.0,
+                                                              right: 5.0,
+                                                              bottom: 5.0,
+                                                              top: 5.0),
+                                                      child: Column(
+                                                        children: [
+                                                          ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10.0),
+                                                            child: Container(
+                                                              width: 80,
+                                                              height: 80,
+                                                              child: Row(
+                                                                children: [
+                                                                  AspectRatio(
+                                                                    aspectRatio:
+                                                                        0.5,
+                                                                    child: Image
+                                                                        .network(
+                                                                      beforeimageUrl[
+                                                                          index],
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    ),
                                                                   ),
-                                                                ),
-                                                                AspectRatio(
-                                                                  aspectRatio:
-                                                                      0.5,
-                                                                  child: Image
-                                                                      .network(
-                                                                    afterimageUrl![
-                                                                        index],
-                                                                    fit: BoxFit
-                                                                        .cover,
+                                                                  AspectRatio(
+                                                                    aspectRatio:
+                                                                        0.5,
+                                                                    child: Image
+                                                                        .network(
+                                                                      afterimageUrl![
+                                                                          index],
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    ),
                                                                   ),
-                                                                ),
-                                                              ],
+                                                                ],
+                                                              ),
                                                             ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   )
                                                 : Container();
                                           });
                                     } else {
-                                      return Container();
+                                      return Container(
+                                        child: Text('まだカルテがありません'),
+                                      );
                                     }
                                   }),
                             ),
@@ -932,8 +1066,8 @@ class _StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class SlideImage extends StatefulWidget {
-  final List<String> beforeimagePhoto;
-  const SlideImage({Key? key, required this.beforeimagePhoto})
+  final List<String> favoriteHairImages;
+  const SlideImage({Key? key, required this.favoriteHairImages})
       : super(key: key);
 
   @override
@@ -943,56 +1077,54 @@ class SlideImage extends StatefulWidget {
 class _SlideImageState extends State<SlideImage> {
   @override
   int activeIndex = 0;
-  Widget buildImage(beforepath, index) => Row(
-        children: [
-          Column(
-            children: [
-              Container(
-                height: 200,
-                width: 220,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(20), // 角を丸くする
-                  image: DecorationImage(
-                    image: NetworkImage(beforepath),
-                    fit: BoxFit.cover,
-                  ),
+  Widget buildImage(beforepath, index) {
+    if (beforepath.isEmpty) {
+      return Container(); // 空のコンテナを返す
+    }
+
+    return Row(
+      children: [
+        Column(
+          children: [
+            Container(
+              height: 200,
+              width: 235,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10), // 角を丸くする
+                image: DecorationImage(
+                  image: NetworkImage(beforepath),
+                  fit: BoxFit.cover,
                 ),
               ),
-            ],
-          ),
-        ],
-      );
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
   Widget buildIndicator() => AnimatedSmoothIndicator(
         activeIndex: activeIndex,
-        count: 5,
+        count: widget.favoriteHairImages.length,
         //エフェクトはドキュメントを見た方がわかりやすい
         effect: JumpingDotEffect(
-            dotHeight: 6,
-            dotWidth: 6,
+            dotHeight: 1,
+            dotWidth: 1,
             activeDotColor: Color.fromARGB(255, 111, 190, 255),
             dotColor: Colors.black12),
       );
-
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(children: [
         Align(
-          alignment: Alignment.center, // これを追加
+          alignment: Alignment.center,
           child: CarouselSlider.builder(
-            itemCount: 5,
+            itemCount: widget.favoriteHairImages.length,
             itemBuilder: (context, index, realIndex) {
-              var beforeimagePhoto = [
-                "https://img.classy-online.jp/wp-content/uploads/2019/09/02195932/DMA-_DSC-1008-22.jpg",
-                "https://img.beauty-navi.com/images/style/2018/04/13/e49fed49e6529c19f6bb00f182254ac7/485x660/9f199be810d18fd9a7cc6e3d77173119.jpg",
-                "https://imgbp.hotp.jp/magazine/media/articles/images/000/002/266/original/a496f46c-23db-4585-8b5f-af082b9f8778.jpg?fit=crop&crop=top",
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1qOb26OB0XbzdKBGl_M9RnmuzfMkpKH55dj9pG5H_9gJTL8esf6BPOKDDbEEmyLLdVSk&usqp=CAU",
-                "https://www.cosme.net/clipkit_uploads/item_images/images/000/491/623/medium/8cd182c9-3566-45ff-a057-9fcf9b00e7c0.jpg?1485490101",
-              ];
-              final beforepath = beforeimagePhoto[index];
-              return buildImage(beforepath, index);
+              final imagePath = widget.favoriteHairImages[index];
+              return buildImage(imagePath, index);
             },
             options: CarouselOptions(
               height: 220,

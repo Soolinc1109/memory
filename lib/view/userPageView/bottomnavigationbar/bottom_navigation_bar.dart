@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memorys/themes/light_color.dart';
-import 'package:memorys/view/bottomnavigationbar/bottom_curved_Painter.dart';
+import 'package:memorys/view/userPageView/bottomnavigationbar/bottom_curved_Painter.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final Function(int)? onIconPresedCallback;
@@ -44,7 +44,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
   double _indexToPosition(int index) {
     // Calculate button positions based off of their
     // index (works with `MainAxisAlignment.spaceAround`)
-    const buttonCount = 4.0;
+    const buttonCount = 3.0;
     final appWidth = MediaQuery.of(context).size.width;
     final buttonsWidth = _getButtonContainerWidth();
     final startX = (appWidth - buttonsWidth) / 2;
@@ -168,8 +168,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
               children: <Widget>[
                 _icon(Icons.home, _selectedIndex == 0, 0),
                 _icon(Icons.memory, _selectedIndex == 1, 1),
-                _icon(Icons.favorite_outline, _selectedIndex == 2, 2),
-                _icon(Icons.person, _selectedIndex == 3, 3), // 新しいタブを追加
+                // _icon(Icons.favorite_outline, _selectedIndex == 2, 2),
+                _icon(Icons.person, _selectedIndex == 2, 2), // 新しいタブを追加
               ],
             ),
           ),

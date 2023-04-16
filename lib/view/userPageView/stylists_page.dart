@@ -1,7 +1,7 @@
 import 'package:adobe_xd/adobe_xd.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:memorys/view/time_line/create_user_post_page.dart';
+import 'package:memorys/view/userPageView/create_user_post_page.dart';
 
 class StylistsPage extends StatefulWidget {
   const StylistsPage({Key? key}) : super(key: key);

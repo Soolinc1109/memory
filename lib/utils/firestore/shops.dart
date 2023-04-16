@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:memorys/model/shop.dart';
+import 'package:memorys/model/shop/shop.dart';
 
 class ShopFirestore {
   static List<Shop> shopList = [];
@@ -16,9 +16,12 @@ class ShopFirestore {
       Map<String, dynamic> data = shopReference.data() as Map<String, dynamic>;
 
       Shop shop = Shop(
+          shopPhone: data['shop_phone'],
           name: data['name'],
+          shopIntroduction: data['shop_intoroduction'],
           logoImage: data['logoImage'],
-          shopImage: data['image'],
+          shopImage: List<String>.from(data['image']),
+          snsUrl: List<String>.from(data['sns']),
           staff: List<String>.from(data['staff']));
       _shopList.add(shop);
 
