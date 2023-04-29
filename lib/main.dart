@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:memorys/provider/account_model.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/view/main_page.dart';
 import 'package:memorys/view/startup/login_page.dart';
 import 'package:memorys/view/startup/login_state.dart';
@@ -11,14 +13,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+  // 画面向きを縦画面に制限
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => LoginState()),
-        ChangeNotifierProvider(
-          create: (context) => AccountModel(),
-          child: MyApp(),
-        ),
+        ChangeNotifierProvider(create: (context) => AccountModel()),
       ],
       child: MyApp(),
     ),
@@ -35,7 +40,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: AppColors.thirdColor, // primarySwatchからprimaryColorに変更
       ),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),

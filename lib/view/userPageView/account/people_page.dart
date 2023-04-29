@@ -6,7 +6,7 @@ import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/userPageView/account/account_page.dart';
-import 'package:memorys/view/userPageView/create_stylist_post_page.dart';
+import 'package:memorys/view/stylistView/create_stylist_post_page.dart';
 import 'package:intl/intl.dart';
 import 'package:memorys/view/userPageView/create_user_post_page.dart';
 

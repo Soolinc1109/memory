@@ -2,14 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/firestore/users.dart';
+import 'package:memorys/view/shopview/customer_carte_page.dart';
+import 'package:memorys/view/stylistView/carte_page.dart';
+import 'package:memorys/view/stylistView/stylist_account_page.dart';
 import 'package:memorys/view/userPageView/account/account_page.dart';
 import 'package:memorys/view/userPageView/bottomnavigationbar/bottom_navigation_bar.dart';
 import 'package:memorys/view/shopview/shop_account_page.dart';
 import 'package:memorys/view/shopview/shop_stylist_page.dart';
 import 'package:memorys/view/userPageView/calendar.dart';
-import 'package:memorys/view/userPageView/stylist_post_page.dart';
+import 'package:memorys/view/stylistView/stylist_post_page.dart';
 import 'package:memorys/view/userPageView/time_line_page.dart';
-import 'package:memorys/view/stylistView/user_list_page.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key? key}) : super(key: key);
@@ -37,15 +39,15 @@ class _MainPageState extends State<MainPage> {
       if (!isStylist && !isOwner)
         HomePage()
       else if (!isOwner)
-        UserListView()
+        CartePageListView()
       else
-        ShopStylistPage(),
+        CustomerCartePage(),
 
       //3
       if (!isStylist && !isOwner)
         AccountPage()
       else if (!isOwner)
-        AccountPage()
+        StylistAccountPage()
       else
         ShopAccountPage(),
     ];

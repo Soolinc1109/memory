@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,268 +9,125 @@ import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/stylistposts.dart';
 import 'package:memorys/utils/firestore/users.dart';
+import 'package:memorys/view/stylistView/resister_customer_page.dart';
 import 'package:memorys/view/userPageView/before_after.dart';
-import 'package:memorys/view/userPageView/user_stylist_account_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class StylistPostPage extends StatefulWidget {
+  const StylistPostPage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _StylistPostPageState createState() => _StylistPostPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int _selectedValue = 1;
-
-  bool _isFirstBuild = true;
+class _StylistPostPageState extends State<StylistPostPage> {
   Account myAccount = Authentication.myAccount!;
   void initState() {
     super.initState();
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_isFirstBuild) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          _isFirstBuild = false;
-        });
-      });
-    }
-  }
-
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.zero,
-        child: AppBar(
-          centerTitle: false,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
+      appBar: AppBar(
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Column(
         children: [
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text(
-                  "あなたのmemory",
-                  style: TextStyle(
-                    fontSize: 17, // 文字サイズを大きくする (例: 24)
-                    fontWeight: FontWeight.bold, // 文字を太くする
-                  ),
-                ),
-              )
-            ],
-          ),
-          Container(
-            height: 100,
-            width: 350,
-            child: StreamBuilder<QuerySnapshot>(
-                stream: _isFirstBuild
-                    ? StylistPostFirestore.posts
-                        .where('customer_id', isEqualTo: myAccount.id)
-                        // .orderBy('created_at', descending: true)
-                        .snapshots()
-                    : null,
-                builder: (context, postSnapshot) {
-                  if (postSnapshot.hasData &&
-                      !postSnapshot.data!.docs.isEmpty) {
-                    List<String> postAccountIds = [];
-                    postSnapshot.data!.docs.forEach((doc) {
-                      Map<String, dynamic> data =
-                          doc.data() as Map<String, dynamic>;
-                      if (!postAccountIds.contains(data['post_account_id'])) {
-                        postAccountIds.add(data['post_account_id']);
-                      }
-                    });
-                    Map<String, dynamic> data = postSnapshot.data!.docs[0]
-                        .data() as Map<String, dynamic>;
-
-                    var visitTime = data['created_at'];
-
-                    DateTime visitDateTime = visitTime.toDate();
-
-                    final month = DateFormat('M月').format(visitDateTime);
-                    final day = DateFormat('d').format(visitDateTime);
-                    return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: postSnapshot.data!.docs.length + 1,
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 4.0,
-                                  right: 5.0,
-                                  bottom: 15.0,
-                                  top: 5.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(7.0),
-                                child: Container(
-                                  width: 80,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        height: 25,
-                                        color: Color.fromARGB(255, 171, 223,
-                                            173), // Set the color of the upper container here
-                                        child: Center(
-                                            child: Text(
-                                          month,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15,
-                                              color: Color.fromARGB(
-                                                  255, 89, 162, 92)),
-                                        )),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          color: Color.fromARGB(255, 221, 238,
-                                              200), // Set the color of the lower container here
-                                          child: Center(
-                                              child: Text(
-                                            day,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 22,
-                                                color: Color.fromARGB(
-                                                    255, 89, 162, 92)),
-                                          )),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          } else {
-                            Map<String, dynamic> data1 =
-                                postSnapshot.data!.docs[index - 1].data()
-                                    as Map<String, dynamic>;
-
-                            StylistPost stylistpost = StylistPost(
-                                carte_id: data['carte_id'],
-                                shop_id: data1['shop_id'],
-                                customer_id: data1['customer_id'],
-                                favorite_level: data1['favorite_level'],
-                                poster_image_url: myAccount.imagepath,
-                                before_image: data1['before_image'],
-                                message_for_customer:
-                                    data1['message_for_customer'],
-                                after_image: data1['after_image'],
-                                postAccountId: data1['post_account_id'],
-                                createdTime: data1['created_at']);
-
-                            final beforeimageUrl = stylistpost.before_image;
-
-                            final afterimageUrl = stylistpost.after_image;
-
-                            return beforeimageUrl != null
-                                ? InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                BeforeAfterDetail(
-                                                  beforeimage:
-                                                      stylistpost.before_image,
-                                                  afterimage:
-                                                      stylistpost.after_image,
-                                                  stylistpost: stylistpost,
-                                                )),
-                                      );
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 4.0,
-                                          right: 5.0,
-                                          bottom: 5.0,
-                                          top: 5.0),
-                                      child: Column(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(7.0),
-                                            child: Container(
-                                              width: 80,
-                                              height: 80,
-                                              child: Row(
-                                                children: [
-                                                  AspectRatio(
-                                                    aspectRatio: 0.5,
-                                                    child: Image.network(
-                                                      beforeimageUrl[0],
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                  AspectRatio(
-                                                    aspectRatio: 0.5,
-                                                    child: Image.network(
-                                                      afterimageUrl![0],
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                : Container();
-                          }
-                        });
-                  } else {
-                    return Container(
-                      child: Text('まだカルテがありません'),
-                    );
-                  }
-                }),
-          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
                 stream: StylistPostFirestore.posts
-                    .where('customer_id', isEqualTo: myAccount.id)
+                    .where('post_account_id', isEqualTo: myAccount.id)
                     // .orderBy('created_at', descending: true)
                     .snapshots(),
                 builder: (context, postSnapshot) {
                   if (!postSnapshot.hasData ||
                       postSnapshot.data!.docs.isEmpty) {
                     print(postSnapshot);
-                    return Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Container(
-                        child: Text(
-                          'まだカルテがありません',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
+                    return Center(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 100,
                           ),
-                        ),
+                          Container(
+                            child: Text(
+                              "カルテを登録しよう！",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Container(
+                              height: 200,
+                              child: Image(
+                                image: NetworkImage(
+                                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/undraw_add_friends_re_3xte.png?alt=media&token=f1055f15-a980-4658-ac7c-77bfd76462c2"),
+                              )),
+                          SizedBox(
+                            height: 40,
+                          ),
+                          Container(
+                            child: Text(
+                              "お店の情報を登録することで\n日々の来店数や、来客者の情報が視覚的に\n把握できるようになります",
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          InkWell(
+                              onTap: () async {
+                                var result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ResisterCustomerPage()),
+                                );
+                                if (result == true) {
+                                  setState(() {});
+                                }
+                              },
+                              child: Container(
+                                  height: 40,
+                                  width: screenWidth / 2.3,
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(15), // 角丸を追加
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        AppColors.thirdColor, // グラデーションの開始色
+                                        AppColors.secondaryColor, // グラデーションの終了色
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text('カルテを登録',
+                                        style: TextStyle(
+                                          fontSize: 20, // フォントサイズを大きくする
+                                          fontWeight:
+                                              FontWeight.bold, // フォントを太くする
+                                          color: Colors.white, // テキストの色を白にする
+                                        )),
+                                  ))),
+                        ],
                       ),
                     );
                   }
                   List<String> postAccountIds = [];
-                  List docList = [];
-
                   postSnapshot.data!.docs.forEach((doc) {
                     Map<String, dynamic> data =
                         doc.data() as Map<String, dynamic>;
-
-                    docList.add(doc.id);
                     if (!postAccountIds.contains(data['post_account_id'])) {
                       postAccountIds.add(data['post_account_id']);
                     }
@@ -294,12 +152,9 @@ class _HomePageState extends State<HomePage> {
                                   postSnapshot.data!.docs[index].data()
                                       as Map<String, dynamic>;
                               final stylistpost = StylistPost(
-                                  id: docList[index],
                                   carte_id: data['carte_id'],
-                                  shop_id: data['shop_id'],
-                                  is_favorite: data['is_favorite'],
-                                  favorite_level: data['favorite_level'],
                                   poster_image_url: myAccount.imagepath,
+                                  shop_id: data['shop_id'],
                                   customer_id: data['customer_id'],
                                   before_image: data['before_image'],
                                   message_for_customer:
@@ -307,9 +162,9 @@ class _HomePageState extends State<HomePage> {
                                   after_image: data['after_image'],
                                   postAccountId: data['post_account_id'],
                                   createdTime: data['created_at']);
-
                               final postAccount = userSnapshot
                                   .data![stylistpost.postAccountId]!;
+
                               return postAccount == null
                                   ? Container(
                                       child: Text(''),
@@ -341,12 +196,11 @@ class _HomePageState extends State<HomePage> {
                                               );
                                             },
                                             child: SlideImage(
-                                              beforeimagePhoto:
-                                                  stylistpost.before_image,
-                                              afterimagePhoto:
-                                                  stylistpost.after_image,
-                                              stylistPostInfo: stylistpost,
-                                            ),
+                                                beforeimagePhoto:
+                                                    stylistpost.before_image,
+                                                afterimagePhoto:
+                                                    stylistpost.after_image,
+                                                stylistPostInfo: stylistpost),
                                           ),
                                           Row(
                                             mainAxisAlignment:
@@ -361,30 +215,16 @@ class _HomePageState extends State<HomePage> {
                                               children: [
                                                 Row(
                                                   children: [
-                                                    InkWell(
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  UserStylistAccountPage(
-                                                                    stylist:
-                                                                        postAccount,
-                                                                  )),
-                                                        );
-                                                      },
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                left: 8.0),
-                                                        child: CircleAvatar(
-                                                          radius: 25,
-                                                          foregroundImage:
-                                                              CachedNetworkImageProvider(
-                                                                  postAccount
-                                                                      .imagepath),
-                                                        ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0),
+                                                      child: CircleAvatar(
+                                                        radius: 25,
+                                                        foregroundImage:
+                                                            CachedNetworkImageProvider(
+                                                                postAccount
+                                                                    .imagepath),
                                                       ),
                                                     ),
                                                     Padding(
@@ -693,37 +533,6 @@ class _SlideImageState extends State<SlideImage> {
                         },
                       );
                     },
-                    child: widget.stylistPostInfo.is_favorite
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.favorite,
-                                  color: AppColors.thirdColor,
-                                  size: 35,
-                                ),
-                                Text(
-                                  widget.stylistPostInfo.favorite_level
-                                      .toString(), // ここに表示したい数字を入力
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.favorite_outline,
-                              color: Color.fromARGB(255, 249, 249, 249),
-                              size: 35,
-                            ),
-                          ),
                   ),
                 )
               ]),

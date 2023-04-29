@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/view/userPageView/bottomnavigationbar/screen.dart';
 import 'package:memorys/view/startup/signup_clear.dart';
 
@@ -67,7 +68,7 @@ class _PassWardPageState extends State<PassWardPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 255, 184, 77),
+                  backgroundColor: AppColors.thirdColor,
                 ),
                 child: Text(
                   '次へ',

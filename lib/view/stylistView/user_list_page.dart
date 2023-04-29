@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/stylistView/user_account_detail.dart';
-import 'package:memorys/view/userPageView/create_stylist_post_page.dart';
+import 'package:memorys/view/stylistView/create_stylist_post_page.dart';
 
 class UserListView extends StatefulWidget {
   @override
@@ -73,14 +73,15 @@ class _UserListViewState extends State<UserListView> {
                           Account userAccount = userList[index];
                           return InkWell(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AccountDetailsPage(
-                                    account: userAccount,
-                                  ),
-                                ),
-                              );
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => AccountDetailsPage(
+
+                              //       userCarte: userAccount,
+                              //     ),
+                              //   ),
+                              // );
                             },
                             child: ListTile(
                               leading: CircleAvatar(
@@ -90,14 +91,14 @@ class _UserListViewState extends State<UserListView> {
                               title: Text(userAccount.name),
                               trailing: ElevatedButton(
                                 onPressed: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            CreateStylistPostPage(
-                                              customer_id: userAccount.id,
-                                            )),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (context) =>
+                                  //           CreateStylistPostPage(
+                                  //             customer_id: userAccount.id,
+                                  //           )),
+                                  // );
                                 },
                                 child: Text('決定'),
                               ),

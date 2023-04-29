@@ -9,6 +9,7 @@ import 'package:memorys/view/userPageView/image_detail.dart';
 import 'package:memorys/view/userPageView/photo_view_page.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
+import 'package:memorys/utils/color.dart';
 
 class CalendarScreen extends StatefulWidget {
   @override
@@ -75,9 +76,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            Color.fromARGB(255, 254, 222, 226),
-                            Color.fromARGB(255, 253, 193, 211),
-                            Color.fromARGB(255, 252, 165, 200)
+                            AppColors.secondaryColor,
+                            AppColors.thirdColor,
+                            AppColors.secondaryColor
                           ],
                         ),
                       ),
@@ -293,7 +294,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             setState(() {});
           }
         },
-        backgroundColor: Color.fromARGB(255, 255, 127, 169),
+        backgroundColor: AppColors.secondaryColor,
         child: Icon(Icons.add),
       ),
     );

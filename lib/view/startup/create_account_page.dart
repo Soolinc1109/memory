@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/authentication.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/startup/signup_clear.dart';
 
@@ -17,8 +18,14 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   TextEditingController userIdController = TextEditingController();
   TextEditingController passController = TextEditingController();
 
+  final focusNode = FocusNode();
+  final focusNode2 = FocusNode();
+
   @override
   Widget build(BuildContext context) {
+    handleKeyboardOverlay(context, focusNode);
+    handleKeyboardOverlay(context, focusNode2);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -43,6 +50,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             Container(
               width: 300,
               child: TextField(
+                focusNode: focusNode,
                 controller: emailController,
                 decoration: InputDecoration(
                   hintText: 'メールアドレス',
@@ -61,6 +69,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             Container(
               width: 300,
               child: TextField(
+                focusNode: focusNode2,
                 controller: passController,
                 decoration: InputDecoration(
                   hintText: 'パスワード',
@@ -105,7 +114,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 255, 184, 77),
+                    backgroundColor: AppColors.thirdColor,
                   ),
                   child: Text(
                     '次へ',
@@ -116,4 +125,40 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       ),
     );
   }
+}
+
+OverlayEntry createCloseKeyboardButton(
+    BuildContext context, FocusNode focusNode) {
+  return OverlayEntry(
+    builder: (BuildContext context) {
+      return Positioned(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        right: 0,
+        child: Material(
+          // この行を追加
+          color: Colors.transparent, // この行を追加
+          child: IconButton(
+            icon: Icon(Icons.keyboard_hide),
+            onPressed: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+              // もしくは
+              // focusNode.unfocus();
+            },
+          ),
+        ), // この行を追加
+      );
+    },
+  );
+}
+
+void handleKeyboardOverlay(BuildContext context, FocusNode focusNode) {
+  final closeButtonOverlay = createCloseKeyboardButton(context, focusNode);
+
+  focusNode.addListener(() {
+    if (focusNode.hasFocus) {
+      Overlay.of(context)?.insert(closeButtonOverlay);
+    } else {
+      closeButtonOverlay.remove();
+    }
+  });
 }

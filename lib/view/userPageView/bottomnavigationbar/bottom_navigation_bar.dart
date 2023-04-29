@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memorys/themes/light_color.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/view/userPageView/bottomnavigationbar/bottom_curved_Painter.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
@@ -76,13 +77,13 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
               alignment: Alignment.center,
               decoration: BoxDecoration(
                   color: isEnable
-                      ? Color.fromARGB(197, 254, 245, 255)
-                      : Colors.white,
+                      ? Color.fromARGB(0, 239, 253, 255)
+                      : Color.fromARGB(0, 255, 255, 255),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                       color: isEnable
-                          ? Color.fromARGB(133, 255, 242, 255)
-                          : Colors.white,
+                          ? Color.fromARGB(0, 239, 253, 255)
+                          : Color.fromARGB(0, 255, 255, 255),
                       blurRadius: 10,
                       spreadRadius: 5,
                       offset: Offset(5, 5),
@@ -93,7 +94,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
                 opacity: isEnable ? _yController.value : 1,
                 child: Icon(icon,
                     color: isEnable
-                        ? Color.fromARGB(255, 243, 43, 146)
+                        ? AppColors.primaryColor
                         : Theme.of(context).iconTheme.color),
               )),
         ),
@@ -110,7 +111,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
             begin: Curves.easeInExpo.transform(_yController.value),
             end: inCurve.transform(_yController.value),
           ).transform(_yController.velocity.sign * 0.5 + 0.5),
-          Color.fromARGB(255, 255, 207, 203)),
+          Color.fromARGB(0, 255, 207, 203)),
     );
   }
 
@@ -167,7 +168,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 _icon(Icons.home, _selectedIndex == 0, 0),
-                _icon(Icons.memory, _selectedIndex == 1, 1),
+                _icon(Icons.note_add, _selectedIndex == 1, 1),
                 // _icon(Icons.favorite_outline, _selectedIndex == 2, 2),
                 _icon(Icons.person, _selectedIndex == 2, 2), // 新しいタブを追加
               ],

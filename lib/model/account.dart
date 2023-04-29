@@ -12,10 +12,12 @@ class Account {
   String? favorite_image_4;
   String selfIntroduction;
   String userId;
+  String shopId;
   String follow;
   String follower;
   bool is_stylist;
   bool is_owner;
+  List<dynamic>? menu_id;
   Timestamp? createdTime;
   Timestamp? updatedTime;
 
@@ -39,10 +41,37 @@ class Account {
       this.favorite_image_4 = '',
       this.selfIntroduction = '',
       this.userId = '',
+      this.shopId = '',
       this.follow = '',
       this.follower = '',
+      this.menu_id,
       this.is_stylist = false,
       this.is_owner = false,
       this.createdTime,
       this.updatedTime});
+
+  factory Account.fromFirestore(DocumentSnapshot documentSnapshot) {
+    final data = documentSnapshot.data() as Map<String, dynamic>;
+
+    return Account(
+      id: documentSnapshot.id,
+      name: data['name'],
+      imagepath: data['imagepath'],
+      favorite_image_0: data['favorite_image_0'],
+      favorite_image_1: data['favorite_image_1'],
+      favorite_image_2: data['favorite_image_2'],
+      favorite_image_3: data['favorite_image_3'],
+      favorite_image_4: data['favorite_image_4'],
+      selfIntroduction: data['selfIntroduction'],
+      menu_id: data['menu_id'],
+      userId: data['userId'],
+      shopId: data['shopId'],
+      follow: data['follow'],
+      follower: data['follower'],
+      is_stylist: data['is_stylist'],
+      is_owner: data['is_owner'],
+      createdTime: data['createdTime'],
+      updatedTime: data['updatedTime'],
+    );
+  }
 }

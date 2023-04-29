@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/authentication.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/utils/function_utils.dart';
 import 'package:memorys/view/main_page.dart';
@@ -84,7 +85,7 @@ class _TopImagePageState extends State<TopImagePage> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 255, 184, 77),
+                        backgroundColor: AppColors.thirdColor,
                       ),
                       child: Text(
                         '写真を追加',
@@ -115,7 +116,7 @@ class _TopImagePageState extends State<TopImagePage> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 255, 184, 77),
+                        backgroundColor: AppColors.thirdColor,
                       ),
                       child: Text(
                         '次へ',
@@ -128,7 +129,9 @@ class _TopImagePageState extends State<TopImagePage> {
             text: TextSpan(style: TextStyle(color: Colors.black), children: [
               TextSpan(
                   text: 'スキップ',
-                  style: TextStyle(color: Colors.orange),
+                  style: TextStyle(
+                    color: AppColors.thirdColor,
+                  ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
                       Navigator.pushReplacement(

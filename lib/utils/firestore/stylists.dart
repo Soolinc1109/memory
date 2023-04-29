@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:memorys/model/account.dart';
+import 'package:memorys/model/shop/carte.dart';
 import 'package:memorys/utils/authentication.dart';
 
 class StylistFirestore {
@@ -166,5 +167,25 @@ class StylistFirestore {
   // static Future<dynamic> getUserFollowing() async {
   //   users.get();
   //   print("${myDocuments.documents.length}");
+  // }
+  // Future<void> addCarte(Carte carte) async {
+  //   CollectionReference cartes = _firestoreInstance.collection('carte');
+
+  //   Map<String, dynamic> data = {
+  //     'customer_name': carte.customer_name,
+  //     'customer_katakana_name': carte.customer_katakana_name,
+  //     'gender': carte.gender,
+  //     'save_count': carte.save_count,
+  //     'shop_id': carte.shop_id,
+  //     'user_id': carte.customer_id,
+  //     'created_at': carte.createdAt ?? FieldValue.serverTimestamp(),
+  //     'lastVisitAt': carte.lastVisitAt,
+  //   };
+
+  //   await cartes.add(data).then((docRef) {
+  //     docRef.update({'id': docRef.id});
+  //   }).catchError((error) {
+  //     print('Error adding Carte: $error');
+  //   });
   // }
 }

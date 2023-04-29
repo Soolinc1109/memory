@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -15,15 +13,15 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/authentication.dart';
 
-class ShopPage extends StatefulWidget {
+class StylistShopPage extends StatefulWidget {
   String shopId;
-  ShopPage({Key? key, required this.shopId}) : super(key: key);
+  StylistShopPage({Key? key, required this.shopId}) : super(key: key);
 
   @override
-  _ShopPageState createState() => _ShopPageState();
+  _StylistShopPageState createState() => _StylistShopPageState();
 }
 
-class _ShopPageState extends State<ShopPage> {
+class _StylistShopPageState extends State<StylistShopPage> {
   bool _isLoading = false;
 
   Account myAccount = Authentication.myAccount!;
@@ -199,9 +197,6 @@ class _ShopPageState extends State<ShopPage> {
                                                           List<String>
                                                               imagePaths =
                                                               snapshot.data!;
-                                                          print(imagePaths);
-                                                          print(
-                                                              '=========================');
                                                           return ListView
                                                               .builder(
                                                             scrollDirection:
@@ -274,7 +269,7 @@ class _ShopPageState extends State<ShopPage> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(4.0),
                                         child: Text(
-                                          "メニュー",
+                                          "メニュ",
                                           style: TextStyle(
                                             color: Color.fromARGB(255, 0, 0, 0),
                                             fontSize: 16.0,
@@ -306,7 +301,16 @@ class _ShopPageState extends State<ShopPage> {
                                                     (BuildContext context,
                                                         int index) {
                                                   final menu =
-                                                      snapshot.data![index];
+                                                      snapshot.data?[index];
+                                                  print(
+                                                      '=========================');
+
+                                                  if (menu == null) {
+                                                    return Container(
+                                                      child: Text("data"),
+                                                    );
+                                                  }
+                                                  print(menu.id);
                                                   return index == 0
                                                       ? Column(
                                                           children: [
@@ -320,89 +324,36 @@ class _ShopPageState extends State<ShopPage> {
                                                                               const StyleDetail()),
                                                                 );
                                                               },
-                                                              child: Container(
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .only(
-                                                                    topLeft: Radius
-                                                                        .circular(
-                                                                            15),
-                                                                  ),
-                                                                  image:
-                                                                      DecorationImage(
-                                                                    image: NetworkImage(
-                                                                        menu.menu_image),
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
-                                                                ),
-                                                                width: 120,
-                                                                height: 170,
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              color:
-                                                                  Colors.white,
-                                                              width: 120,
-                                                              height: 70,
-                                                              child: Padding(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(2),
-                                                                child: Column(
-                                                                  children: [
-                                                                    Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
-                                                                      children: [
-                                                                        Align(
-                                                                          alignment:
-                                                                              Alignment.bottomLeft,
-                                                                          child:
-                                                                              Text(
-                                                                            '￥${menu.price}',
-                                                                            style: TextStyle(
-                                                                                color: Color.fromARGB(255, 54, 171, 244),
-                                                                                fontSize: 13,
-                                                                                fontWeight: FontWeight.bold),
-                                                                          ),
-                                                                        ),
-                                                                      ],
+                                                              child:
+                                                                  ConstrainedBox(
+                                                                constraints:
+                                                                    BoxConstraints(
+                                                                        maxWidth:
+                                                                            120,
+                                                                        maxHeight:
+                                                                            170),
+                                                                child:
+                                                                    Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .only(
+                                                                      topLeft: Radius
+                                                                          .circular(
+                                                                              15),
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        )
-                                                      : Column(
-                                                          children: [
-                                                            InkWell(
-                                                              onTap: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                      builder:
-                                                                          (context) =>
-                                                                              const StyleDetail()),
-                                                                );
-                                                              },
-                                                              child: Container(
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  image:
-                                                                      DecorationImage(
-                                                                    image: NetworkImage(
-                                                                        menu.menu_image),
-                                                                    fit: BoxFit
-                                                                        .cover,
+                                                                    image:
+                                                                        DecorationImage(
+                                                                      image: NetworkImage(
+                                                                          menu.menu_image),
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    ),
                                                                   ),
+                                                                  width: 120,
+                                                                  height: 170,
                                                                 ),
-                                                                width: 120,
-                                                                height: 170,
                                                               ),
                                                             ),
                                                             Container(
@@ -451,6 +402,303 @@ class _ShopPageState extends State<ShopPage> {
                                                                                 fontWeight: FontWeight.bold),
                                                                           ),
                                                                         ),
+                                                                        InkWell(
+                                                                          onTap:
+                                                                              () {
+                                                                            if (myAccount.menu_id ==
+                                                                                null) {
+                                                                              print("no Data");
+                                                                            }
+                                                                            print(myAccount.menu_id![0]);
+                                                                            print(myAccount.id);
+                                                                            print(menu.id);
+                                                                            myAccount.menu_id?.contains(menu.id) ?? false
+                                                                                ? showDialog(
+                                                                                    context: context,
+                                                                                    builder: (BuildContext context) {
+                                                                                      print(myAccount.menu_id);
+                                                                                      return AlertDialog(
+                                                                                        title: Text('メニュー削除'),
+                                                                                        content: Text('このメニューをあなたのメニューに削除しますか？'),
+                                                                                        actions: <Widget>[
+                                                                                          TextButton(
+                                                                                            child: Text('閉じる'),
+                                                                                            onPressed: () {
+                                                                                              Navigator.of(context).pop();
+                                                                                            },
+                                                                                          ),
+                                                                                          TextButton(
+                                                                                              child: Text('メニュー削除'),
+                                                                                              onPressed: _isLoading
+                                                                                                  ? null
+                                                                                                  : () async {
+                                                                                                      setState(() {
+                                                                                                        _isLoading = true;
+                                                                                                      });
+
+                                                                                                      if (myAccount.menu_id == null) {
+                                                                                                        myAccount.menu_id = [menu.id];
+                                                                                                      } else {
+                                                                                                        myAccount.menu_id!.add(menu.id);
+                                                                                                      }
+
+                                                                                                      if (menu.stylist_ids == null) {
+                                                                                                        menu.stylist_ids = [myAccount.id];
+                                                                                                      } else {
+                                                                                                        menu.stylist_ids!.add(myAccount.id);
+                                                                                                      }
+                                                                                                    }),
+                                                                                        ],
+                                                                                      );
+                                                                                    },
+                                                                                  )
+                                                                                : showDialog(
+                                                                                    context: context,
+                                                                                    builder: (BuildContext context) {
+                                                                                      print(myAccount.menu_id);
+                                                                                      return AlertDialog(
+                                                                                        title: Text('メニュー登録'),
+                                                                                        content: Text('このメニューをあなたのメニューに追加しますか？'),
+                                                                                        actions: <Widget>[
+                                                                                          TextButton(
+                                                                                            child: Text('閉じる'),
+                                                                                            onPressed: () {
+                                                                                              Navigator.of(context).pop();
+                                                                                            },
+                                                                                          ),
+                                                                                          TextButton(
+                                                                                              child: Text('メニュー追加'),
+                                                                                              onPressed: _isLoading
+                                                                                                  ? null
+                                                                                                  : () async {
+                                                                                                      setState(() {
+                                                                                                        _isLoading = true;
+                                                                                                      });
+
+                                                                                                      if (myAccount.menu_id == null) {
+                                                                                                        myAccount.menu_id = [menu.id];
+                                                                                                      } else {
+                                                                                                        myAccount.menu_id!.add(menu.id);
+                                                                                                      }
+
+                                                                                                      if (menu.stylist_ids == null) {
+                                                                                                        menu.stylist_ids = [myAccount.id];
+                                                                                                      } else {
+                                                                                                        menu.stylist_ids!.add(myAccount.id);
+                                                                                                      }
+
+                                                                                                      final result = await UserFirestore.updateUser(myAccount);
+                                                                                                      final result2 = await ShopFirestore.updateMenu(myAccount.shopId, menu.id, menu);
+
+                                                                                                      if (result && result2) {
+                                                                                                        Navigator.pop(context, true);
+                                                                                                        _isLoading = false;
+                                                                                                      } else {
+                                                                                                        showDialog(
+                                                                                                          context: context,
+                                                                                                          builder: (BuildContext context) {
+                                                                                                            return AlertDialog(
+                                                                                                              title: Text('エラー'),
+                                                                                                              content: Text('ユーザー情報の更新に失敗しました。'),
+                                                                                                              actions: <Widget>[
+                                                                                                                TextButton(
+                                                                                                                  child: Text('閉じる'),
+                                                                                                                  onPressed: () {
+                                                                                                                    Navigator.of(context).pop();
+                                                                                                                  },
+                                                                                                                ),
+                                                                                                              ],
+                                                                                                            );
+                                                                                                          },
+                                                                                                        );
+                                                                                                      }
+                                                                                                    }),
+                                                                                        ],
+                                                                                      );
+                                                                                    },
+                                                                                  );
+                                                                          },
+                                                                          child:
+                                                                              Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.all(2.0),
+                                                                            child:
+                                                                                Icon(
+                                                                              myAccount.menu_id?.contains(menu.id) ?? false ? Icons.remove_circle_outline : Icons.add_box,
+                                                                              color: Color.fromARGB(255, 208, 208, 208),
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      : Column(
+                                                          children: [
+                                                            InkWell(
+                                                              onTap: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) =>
+                                                                              const StyleDetail()),
+                                                                );
+                                                              },
+                                                              child:
+                                                                  ConstrainedBox(
+                                                                constraints:
+                                                                    BoxConstraints(
+                                                                        maxWidth:
+                                                                            120,
+                                                                        maxHeight:
+                                                                            170),
+                                                                child:
+                                                                    Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    image:
+                                                                        DecorationImage(
+                                                                      image: NetworkImage(
+                                                                          menu.menu_image),
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    ),
+                                                                  ),
+                                                                  width: 120,
+                                                                  height: 170,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              color:
+                                                                  Colors.white,
+                                                              width: 120,
+                                                              height: 70,
+                                                              child: Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(2),
+                                                                child: Column(
+                                                                  children: [
+                                                                    Align(
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .bottomLeft,
+                                                                      child:
+                                                                          Text(
+                                                                        menu.name,
+                                                                        maxLines:
+                                                                            2,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Colors.black,
+                                                                          fontSize:
+                                                                              11,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: [
+                                                                        Align(
+                                                                          alignment:
+                                                                              Alignment.bottomLeft,
+                                                                          child:
+                                                                              Text(
+                                                                            '￥${menu.price}',
+                                                                            style: TextStyle(
+                                                                                color: Color.fromARGB(255, 54, 171, 244),
+                                                                                fontSize: 13,
+                                                                                fontWeight: FontWeight.bold),
+                                                                          ),
+                                                                        ),
+                                                                        InkWell(
+                                                                          onTap:
+                                                                              () {
+                                                                            showDialog(
+                                                                              context: context,
+                                                                              builder: (BuildContext context) {
+                                                                                return AlertDialog(
+                                                                                  title: Text('メニュー登録'),
+                                                                                  content: Text('このメニューをあなたのメニューに追加しますか？'),
+                                                                                  actions: <Widget>[
+                                                                                    TextButton(
+                                                                                      child: Text('閉じる'),
+                                                                                      onPressed: () {
+                                                                                        Navigator.of(context).pop();
+                                                                                      },
+                                                                                    ),
+                                                                                    TextButton(
+                                                                                        child: Text('メニュー追加'),
+                                                                                        onPressed: _isLoading
+                                                                                            ? null
+                                                                                            : () async {
+                                                                                                setState(() {
+                                                                                                  _isLoading = true;
+                                                                                                });
+
+                                                                                                if (myAccount.menu_id == null) {
+                                                                                                  myAccount.menu_id = [menu.id];
+                                                                                                } else {
+                                                                                                  myAccount.menu_id!.add(menu.id);
+                                                                                                }
+
+                                                                                                if (menu.stylist_ids == null) {
+                                                                                                  menu.stylist_ids = [myAccount.id];
+                                                                                                } else {
+                                                                                                  menu.stylist_ids!.add(myAccount.id);
+                                                                                                }
+
+                                                                                                final result = await UserFirestore.updateUser(myAccount);
+                                                                                                final result2 = await ShopFirestore.updateMenu(myAccount.shopId, menu.id, menu);
+
+                                                                                                if (result && result2) {
+                                                                                                  Navigator.pop(context, true);
+                                                                                                  _isLoading = false;
+                                                                                                } else {
+                                                                                                  showDialog(
+                                                                                                    context: context,
+                                                                                                    builder: (BuildContext context) {
+                                                                                                      return AlertDialog(
+                                                                                                        title: Text('エラー'),
+                                                                                                        content: Text('ユーザー情報の更新に失敗しました。'),
+                                                                                                        actions: <Widget>[
+                                                                                                          TextButton(
+                                                                                                            child: Text('閉じる'),
+                                                                                                            onPressed: () {
+                                                                                                              Navigator.of(context).pop();
+                                                                                                            },
+                                                                                                          ),
+                                                                                                        ],
+                                                                                                      );
+                                                                                                    },
+                                                                                                  );
+                                                                                                }
+                                                                                              }),
+                                                                                  ],
+                                                                                );
+                                                                              },
+                                                                            );
+                                                                          },
+                                                                          child:
+                                                                              Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.all(2.0),
+                                                                            child:
+                                                                                Icon(
+                                                                              myAccount.menu_id?.contains(menu.id) ?? false ? Icons.remove_circle_outline : Icons.add_box,
+                                                                              color: Color.fromARGB(255, 208, 208, 208),
+                                                                            ),
+                                                                          ),
+                                                                        )
                                                                       ],
                                                                     ),
                                                                   ],

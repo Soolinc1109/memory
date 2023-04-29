@@ -1,57 +1,30 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:memorys/model/account.dart';
-import 'dart:math';
-import 'package:memorys/model/post.dart';
+import 'package:memorys/model/shop/carte.dart';
 import 'package:memorys/utils/authentication.dart';
-import 'package:memorys/utils/function_utils.dart';
 import '../../utils/firestore/posts.dart';
 
-class CreatePostPage extends StatefulWidget {
-  const CreatePostPage({
+class CreateCartePostPage extends StatefulWidget {
+  const CreateCartePostPage({
     super.key,
   });
 
   @override
-  State<CreatePostPage> createState() => _CreatePostPageState();
+  State<CreateCartePostPage> createState() => _CreateCartePostPageState();
 }
 
-class _CreatePostPageState extends State<CreatePostPage> {
-  TextEditingController contentController = TextEditingController();
-  File? image;
-  ImagePicker picker = ImagePicker();
-  ImageProvider? imageProvider;
+class _CreateCartePostPageState extends State<CreateCartePostPage> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController katakananameController = TextEditingController();
+  TextEditingController genderController = TextEditingController();
+  TextEditingController memoController = TextEditingController();
 
   bool onpressed = false;
   bool loading = false; // Add this line to create a new loading variable
   void rebuild() {
     setState(() {});
-  }
-
-  void updateImageProvider() {
-    if (image == null) {
-      imageProvider = NetworkImage(myAccount.imagepath);
-    } else {
-      imageProvider = FileImage(image!);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    updateImageProvider();
-  }
-
-  Future<String> uploadpostImage(String pid) async {
-    final FirebaseStorage storageInstance = FirebaseStorage.instance;
-    final Reference ref = storageInstance.ref();
-    await ref.child(pid).putFile(image!);
-    String downloadUrl = await storageInstance.ref(pid).getDownloadURL();
-    return downloadUrl;
   }
 
   Account myAccount = Authentication.myAccount!;
@@ -77,42 +50,24 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 onPressed: loading
                     ? null
                     : () async {
-                        // Check if loading is false before executing the code
-                        String generateNonce([int length = 32]) {
-                          const charset =
-                              '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
-                          final random = Random.secure();
-                          final randomStr = List.generate(
-                                  length,
-                                  (_) =>
-                                      charset[random.nextInt(charset.length)])
-                              .join();
-                          return randomStr;
-                        }
-
-                        final rondom = generateNonce();
-                        if (contentController.text.isNotEmpty &&
-                            image != null) {
+                        if (nameController.text.isNotEmpty) {
                           setState(() {
-                            loading =
-                                true; // Set loading to true at the beginning of the onPressed callback
+                            loading = true;
                           });
                           setState(() {
                             onpressed = true;
                           });
-                          String imagePath = '';
 
-                          var _result = await uploadpostImage(rondom);
-                          imagePath = _result;
-
-                          final newPost = Post(
-                              postAccountId: myAccount.id,
-                              content: contentController.text,
-                              createdAt: (Timestamp.now()).toDate(),
-                              posterImageUrl: myAccount.imagepath,
-                              postImageUrl: imagePath,
-                              posterId: 'posterId');
-                          final result = await PostFirestore.addPost(newPost);
+                          final newPost = Carte(
+                              post_stylist_account_id: myAccount.id,
+                              customer_name: nameController.text,
+                              customer_katakana_name:
+                                  katakananameController.text,
+                              createdAt: (Timestamp.now()),
+                              shop_id: myAccount.shopId,
+                              customer_id: '',
+                              gender: 1);
+                          final result = await PostFirestore.addCarte(newPost);
                           if (result == true) {
                             setState(() {
                               HapticFeedback.heavyImpact();
@@ -153,7 +108,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     Radius.circular(35),
                   ),
                 )),
-                child: loading && contentController.text.isNotEmpty
+                child: loading && nameController.text.isNotEmpty
                     ? CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       )
@@ -164,55 +119,63 @@ class _CreatePostPageState extends State<CreatePostPage> {
           centerTitle: true,
 
           title: const Text(
-            '新規投稿',
+            'カルテ作成',
             style: TextStyle(color: Colors.black),
           ),
           elevation: 0,
         ),
       ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: CircleAvatar(
-            radius: 22,
-            foregroundImage: NetworkImage(myAccount.imagepath),
-          ),
+        SizedBox(
+          height: 20,
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 48.0),
+          padding: const EdgeInsets.symmetric(horizontal: 48.0),
           child: TextField(
             keyboardType: TextInputType.multiline,
             maxLines: null,
             decoration: const InputDecoration(
-              border: InputBorder.none,
-              hintText: "いまどうしてる？",
+              hintText: "漢字名",
             ),
-            controller: contentController,
+            controller: nameController,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 48.0),
+          child: TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            decoration: const InputDecoration(
+              hintText: "カナ名",
+            ),
+            controller: katakananameController,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 48.0),
+          child: TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            decoration: const InputDecoration(
+              hintText: "性別",
+            ),
+            controller: genderController,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 48.0),
+          child: TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            decoration: const InputDecoration(
+              hintText: "メモ",
+            ),
+            controller: memoController,
           ),
         ),
         const SizedBox(
           height: 150,
         ),
-        InkWell(
-          onTap: () async {
-            var result = await FunctionUtils.getImageFromGallery();
-            if (result != null) {
-              setState(() {
-                image = File(result.path);
-              });
-            }
-          },
-          child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: image == null
-                  ? const CircleAvatar(child: Icon(Icons.photo))
-                  : Image.file(
-                      image!,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    )),
-        )
       ]),
     );
   }

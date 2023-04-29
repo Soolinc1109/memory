@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/view/userPageView/bottomnavigationbar/centered_elasticIn_curve.dart';
 
 class BackgroundCurvePainter extends CustomPainter {
@@ -8,10 +9,10 @@ class BackgroundCurvePainter extends CustomPainter {
   static const _horizontalControlBottom = 0.5;
   static const _pointControlTop = 0.35;
   static const _pointControlBottom = 0.85;
-  static const _topY = -120.0;
+  static const _topY = -80.0;
   static const _bottomY = -70.0;
-  static const _topDistance = 0.0;
-  static const _bottomDistance = 0.0;
+  static const _topDistance = 100.0;
+  static const _bottomDistance = 100.0;
 
   final double _x;
   final double _normalizedY;
@@ -23,7 +24,7 @@ class BackgroundCurvePainter extends CustomPainter {
   @override
   void paint(canvas, size) {
     // Paint two cubic bezier curves using various linear interpolations based off of the `_normalizedY` value
-    final norm = LinearPointCurve(0.5, 2.0).transform(_normalizedY) / 5;
+    final norm = LinearPointCurve(0.5, 2.0).transform(_normalizedY) / 3;
 
     final radius =
         Tween<double>(begin: _radiusTop, end: _radiusBottom).transform(norm);
@@ -40,8 +41,8 @@ class BackgroundCurvePainter extends CustomPainter {
         .transform(LinearPointCurve(0.2, 0.7).transform(norm));
     final dist = Tween<double>(begin: _topDistance, end: _bottomDistance)
         .transform(LinearPointCurve(0.5, 0.0).transform(norm));
-    final x0 = _x - dist / 2;
-    final x1 = _x + dist / 2;
+    final x0 = _x - dist / 30;
+    final x1 = _x + dist / 30;
 
     final path = Path()
       ..moveTo(0, 0)
@@ -55,7 +56,7 @@ class BackgroundCurvePainter extends CustomPainter {
       ..lineTo(size.width, size.height)
       ..lineTo(-100, size.height);
 
-    final paint = Paint()..color = Color.fromARGB(255, 255, 247, 253);
+    final paint = Paint()..color = AppColors.thirdColor;
 
     canvas.drawPath(path, paint);
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/authentication.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/startup/top_image.dart';
 
@@ -25,7 +26,7 @@ class _ClearPageState extends State<ClearPage> {
             height: 210,
           ),
           Text(
-            'instagramへようこそ！',
+            'memoryへようこそ！',
             style: TextStyle(fontSize: 25),
           ),
           SizedBox(
@@ -76,7 +77,7 @@ class _ClearPageState extends State<ClearPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 255, 184, 77),
+                  backgroundColor: AppColors.thirdColor,
                 ),
                 child: Text(
                   '登録を完了',

@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:memorys/model/account.dart';
-import 'package:memorys/model/stylistpost.dart';
+import 'package:memorys/model/shop/shop.dart';
+import 'package:memorys/model/shop/stylistpost.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/color.dart';
+import 'package:memorys/utils/firestore/shops.dart';
 import 'package:memorys/utils/firestore/stylistposts.dart';
 import 'package:memorys/view/userPageView/account/edit_account_page.dart';
 import 'package:memorys/view/startup/login_page.dart';
@@ -22,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: AppColors.thirdColor,
       ),
       home: AccountPage(),
 //      home: const NestedScrollViewSamplePage(),
@@ -73,6 +78,7 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     List<String>? favoriteimage = [
       myAccount.favorite_image_0!,
       myAccount.favorite_image_1!,
@@ -186,54 +192,58 @@ class _AccountPageState extends State<AccountPage> {
                     Container(
                       color: Colors.white,
                       padding: EdgeInsets.only(right: 15, left: 15, top: 20),
-                      height: 120,
+                      height: 140,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
+                              Column(
                                 children: [
                                   CircleAvatar(
-                                    radius: 41,
+                                    radius: 35,
                                     foregroundImage:
                                         NetworkImage(myAccount.imagepath),
                                   ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          //ステイトフルウィジェットのクラスをステイトのクラスで使おうとするときにwidget.が必要！
-                                          myAccount.name,
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          myAccount.selfIntroduction,
-                                          textAlign: TextAlign.start,
-                                          maxLines: 3, // 3行まで表示（適切な行数に変更してください）
-                                          overflow: TextOverflow
-                                              .ellipsis, // もしテキストがはみ出す場合、末尾に '...' を表示
-                                        ),
-                                      ),
-                                    ],
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      //ステイトフルウィジェットのクラスをステイトのクラスで使おうとするときにwidget.が必要！
+                                      myAccount.name,
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                 ],
                               ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 68.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '前回美容室に行ってから',
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          '23',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 35),
+                                        ),
+                                        Text(
+                                          '日経ってます',
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              )
                             ],
                           ),
                         ],
@@ -257,7 +267,7 @@ class _AccountPageState extends State<AccountPage> {
                       ),
                       Tab(
                         child: Text(
-                          '予約状況',
+                          '予約履歴',
                           style: TextStyle(
                             color: Colors.black,
                           ),
@@ -278,7 +288,7 @@ class _AccountPageState extends State<AccountPage> {
                       child: Center(
                           child: Container(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                            EdgeInsets.symmetric(horizontal: 0, vertical: 15),
                         child: Column(
                           children: [
                             Row(
@@ -311,7 +321,9 @@ class _AccountPageState extends State<AccountPage> {
                                   // ここでタップ時の処理を記述します。
                                 },
                                 child: SlideImage(
-                                    favoriteHairImages: favoriteimage)),
+                                  favoriteHairImages: favoriteimage,
+                                  screenWidth: screenWidth,
+                                )),
                             SizedBox(
                               height: 10,
                             ),
@@ -353,106 +365,197 @@ class _AccountPageState extends State<AccountPage> {
                                               .add(data['post_account_id']);
                                         }
                                       });
+                                      Map<String, dynamic> data =
+                                          postSnapshot.data!.docs[0].data()
+                                              as Map<String, dynamic>;
+
+                                      var visitTime = data['created_at'];
+
+                                      DateTime visitDateTime =
+                                          visitTime.toDate();
+
+                                      final month = DateFormat('M月')
+                                          .format(visitDateTime);
+                                      final day =
+                                          DateFormat('d').format(visitDateTime);
                                       return ListView.builder(
                                           scrollDirection: Axis.horizontal,
                                           itemCount:
-                                              postSnapshot.data!.docs.length,
+                                              postSnapshot.data!.docs.length +
+                                                  1,
                                           itemBuilder: (context, index) {
-                                            Map<String, dynamic> data =
-                                                postSnapshot.data!.docs[index]
-                                                        .data()
-                                                    as Map<String, dynamic>;
-                                            StylistPost stylistpost =
-                                                StylistPost(
-                                                    customer_id:
-                                                        data['customer_id'],
-                                                    poster_image_url:
-                                                        myAccount.imagepath,
-                                                    before_image:
-                                                        data['before_image'],
-                                                    message_for_customer: data[
-                                                        'message_for_customer'],
-                                                    after_image:
-                                                        data['after_image'],
-                                                    postAccountId:
-                                                        data['post_account_id'],
-                                                    createdTime:
-                                                        data['created_at']);
-                                            final beforeimageUrl =
-                                                stylistpost.before_image;
+                                            if (index == 0) {
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 4.0,
+                                                    right: 5.0,
+                                                    bottom: 15.0,
+                                                    top: 5.0),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          7.0),
+                                                  child: Container(
+                                                    width: 80,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Container(
+                                                          height: 25,
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              171,
+                                                              223,
+                                                              173), // Set the color of the upper container here
+                                                          child: Center(
+                                                              child: Text(
+                                                            month,
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 15,
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        89,
+                                                                        162,
+                                                                        92)),
+                                                          )),
+                                                        ),
+                                                        Expanded(
+                                                          child: Container(
+                                                            color: Color.fromARGB(
+                                                                255,
+                                                                221,
+                                                                238,
+                                                                200), // Set the color of the lower container here
+                                                            child: Center(
+                                                                child: Text(
+                                                              day,
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 22,
+                                                                  color: Color
+                                                                      .fromARGB(
+                                                                          255,
+                                                                          89,
+                                                                          162,
+                                                                          92)),
+                                                            )),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              Map<String, dynamic> data1 =
+                                                  postSnapshot
+                                                          .data!.docs[index - 1]
+                                                          .data()
+                                                      as Map<String, dynamic>;
 
-                                            final afterimageUrl =
-                                                stylistpost.after_image;
+                                              StylistPost stylistpost = StylistPost(
+                                                  carte_id: data['carte_id'],
+                                                  shop_id: data1['shop_id'],
+                                                  customer_id:
+                                                      data1['customer_id'],
+                                                  poster_image_url:
+                                                      myAccount.imagepath,
+                                                  before_image:
+                                                      data1['before_image'],
+                                                  message_for_customer: data1[
+                                                      'message_for_customer'],
+                                                  after_image:
+                                                      data1['after_image'],
+                                                  postAccountId:
+                                                      data1['post_account_id'],
+                                                  createdTime:
+                                                      data1['created_at']);
 
-                                            return beforeimageUrl != null
-                                                ? InkWell(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                BeforeAfterDetail(
-                                                                  beforeimage:
-                                                                      stylistpost
-                                                                          .before_image,
-                                                                  afterimage:
-                                                                      stylistpost
-                                                                          .after_image,
-                                                                  stylistpost:
-                                                                      stylistpost,
-                                                                )),
-                                                      );
-                                                    },
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 4.0,
-                                                              right: 5.0,
-                                                              bottom: 5.0,
-                                                              top: 5.0),
-                                                      child: Column(
-                                                        children: [
-                                                          ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10.0),
-                                                            child: Container(
-                                                              width: 80,
-                                                              height: 80,
-                                                              child: Row(
-                                                                children: [
-                                                                  AspectRatio(
-                                                                    aspectRatio:
-                                                                        0.5,
-                                                                    child: Image
-                                                                        .network(
-                                                                      beforeimageUrl[
-                                                                          index],
-                                                                      fit: BoxFit
-                                                                          .cover,
+                                              final beforeimageUrl =
+                                                  stylistpost.before_image;
+
+                                              final afterimageUrl =
+                                                  stylistpost.after_image;
+
+                                              return beforeimageUrl != null
+                                                  ? InkWell(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  BeforeAfterDetail(
+                                                                    beforeimage:
+                                                                        stylistpost
+                                                                            .before_image,
+                                                                    afterimage:
+                                                                        stylistpost
+                                                                            .after_image,
+                                                                    stylistpost:
+                                                                        stylistpost,
+                                                                  )),
+                                                        );
+                                                      },
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                left: 4.0,
+                                                                right: 5.0,
+                                                                bottom: 5.0,
+                                                                top: 5.0),
+                                                        child: Column(
+                                                          children: [
+                                                            ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          7.0),
+                                                              child: Container(
+                                                                width: 80,
+                                                                height: 80,
+                                                                child: Row(
+                                                                  children: [
+                                                                    AspectRatio(
+                                                                      aspectRatio:
+                                                                          0.5,
+                                                                      child: Image
+                                                                          .network(
+                                                                        beforeimageUrl[
+                                                                            0],
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                  AspectRatio(
-                                                                    aspectRatio:
-                                                                        0.5,
-                                                                    child: Image
-                                                                        .network(
-                                                                      afterimageUrl![
-                                                                          index],
-                                                                      fit: BoxFit
-                                                                          .cover,
+                                                                    AspectRatio(
+                                                                      aspectRatio:
+                                                                          0.5,
+                                                                      child: Image
+                                                                          .network(
+                                                                        afterimageUrl![
+                                                                            0],
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                ],
+                                                                  ],
+                                                                ),
                                                               ),
                                                             ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                  )
-                                                : Container();
+                                                    )
+                                                  : Container();
+                                            }
                                           });
                                     } else {
                                       return Container(
@@ -778,221 +881,203 @@ class _AccountPageState extends State<AccountPage> {
                         ),
                       )),
                     ),
-                    Center(
-                      //2
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: InkWell(
-                              onTap: (() {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const ShopPage()),
-                                );
-                              }),
+                    StreamBuilder<QuerySnapshot>(
+                        stream: StylistPostFirestore.posts
+                            .where('customer_id', isEqualTo: myAccount.id)
+                            // .orderBy('created_at', descending: true)
+                            .snapshots(),
+                        builder: (context, postSnapshot) {
+                          if (!postSnapshot.hasData ||
+                              postSnapshot.data!.docs.isEmpty) {
+                            print(postSnapshot);
+                            return Padding(
+                              padding: const EdgeInsets.all(18.0),
                               child: Container(
-                                width: 360,
-                                child: Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                      child: Image.network(
-                                        "https://imgbp.hotp.jp/CSP/IMG_SRC/51/97/B163645197/B163645197.jpg?impolicy=HPB_policy_default&w=419&h=314",
-                                        width: 150,
-                                        height: 100,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                child: Text(
+                                  'まだお店に行ってません',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          // postSnapshot.data.docsをList<QueryDocumentSnapshot>型の変数に格納
+                          List<QueryDocumentSnapshot> postDocs =
+                              postSnapshot.data!.docs;
+
+                          // 各ドキュメントのデータをList<Map<String, dynamic>>型の変数に格納
+                          List<Map<String, dynamic>> postDataList = postDocs
+                              .map((doc) => doc.data() as Map<String, dynamic>)
+                              .toList();
+                          List<String> shopIds = postDataList
+                              .map((data) => data['shop_id'] as String)
+                              .toList();
+                          print(shopIds);
+                          return StreamBuilder<List<Shop>>(
+                              stream: ShopFirestore.getShops(shopIds),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text("エラー: ${snapshot.error}");
+                                }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator(); // ここを追加
+                                }
+                                List<Shop> shopList = [];
+                                if (snapshot.hasData) {
+                                  // ここを変更
+                                  shopList = snapshot.data!;
+                                }
+
+                                shopList = snapshot.data!;
+                                return ListView.builder(
+                                  itemCount: postDataList.length,
+                                  itemBuilder: (context, index) {
+                                    print(shopList[index].logoImage);
+                                    print('=========================');
+                                    if (shopList.isEmpty) {
+                                      return CircularProgressIndicator(); // ここを追加
+                                    }
+                                    Map<String, dynamic> postData =
+                                        postDataList[index];
+                                    print(postData);
+                                    return Column(
                                       children: [
+                                        SizedBox(
+                                          height: 10,
+                                        ),
                                         Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 2, horizontal: 6),
+                                          padding: EdgeInsets.all(10),
+                                          child: InkWell(
+                                            onTap: (() {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ShopPage(
+                                                          shopId:
+                                                              shopList[index]
+                                                                  .id,
+                                                        )),
+                                              );
+                                            }),
+                                            child: Container(
+                                              width: 360,
+                                              child: Row(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                      Radius.circular(10),
+                                                    ),
+                                                    child: Image.network(
+                                                      shopList[index]
+                                                          .logoImage, // ここを変更
+                                                      width: 150,
+                                                      height: 100,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 5),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Container(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                                vertical: 2,
+                                                                horizontal: 6),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    20),
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    20),
+                                                          ),
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              DateFormat('M月d日')
+                                                                  .format(postData[
+                                                                          'created_at']
+                                                                      .toDate()), // Change this line
+                                                              style: TextStyle(
+                                                                fontSize: 19,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: AppColors
+                                                                    .secondaryColor,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              'に来店しました', // Change this line
+                                                              style: TextStyle(
+                                                                fontSize: 15,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: AppColors
+                                                                    .secondaryColor,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 10),
+                                                      Text(
+                                                        postData[
+                                                            'message_for_customer'], // ここを変更
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                        ),
+                                                        textAlign:
+                                                            TextAlign.start,
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                           decoration: BoxDecoration(
+                                            color: Colors.white,
                                             borderRadius: BorderRadius.only(
-                                              bottomLeft: Radius.circular(20),
-                                              bottomRight: Radius.circular(20),
+                                              topLeft: Radius.circular(10),
+                                              bottomLeft: Radius.circular(10),
+                                              topRight: Radius.circular(10),
+                                              bottomRight: Radius.circular(10),
                                             ),
-                                          ),
-                                          child: Text(
-                                            "4月23日に来店",
-                                            style: TextStyle(
-                                              fontSize: 19,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.secondaryColor,
-                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey
+                                                    .withOpacity(0.5),
+                                                spreadRadius: 1,
+                                                blurRadius: 5,
+                                                offset: Offset(0, 3),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        SizedBox(height: 10),
-                                        Text(
-                                          "所要時間：2時間",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        Text(
-                                          "施術内容：カット＆トリートメント",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        Text(
-                                          "合計金額：￥9,050",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        Text(
-                                          "スタイリスト：日見　圭吾",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.start,
+                                        SizedBox(
+                                          height: 10,
                                         ),
                                       ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                                bottomRight: Radius.circular(10),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: InkWell(
-                              onTap: (() {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const ShopPage()),
+                                    );
+                                  },
                                 );
-                              }),
-                              child: Container(
-                                width: 360,
-                                child: Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                      child: Image.network(
-                                        "https://imgbp.hotp.jp/CSP/IMG_SRC/51/97/B163645197/B163645197.jpg?impolicy=HPB_policy_default&w=419&h=314",
-                                        width: 150,
-                                        height: 100,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 2, horizontal: 6),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.only(
-                                              bottomLeft: Radius.circular(20),
-                                              bottomRight: Radius.circular(20),
-                                            ),
-                                          ),
-                                          child: Text(
-                                            "4月23日に来店",
-                                            style: TextStyle(
-                                              fontSize: 19,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.secondaryColor,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 10),
-                                        Text(
-                                          "所要時間：2時間",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        Text(
-                                          "施術内容：カット＆トリートメント",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        Text(
-                                          "合計金額：￥9,050",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        Text(
-                                          "スタイリスト：日見　圭吾",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                                bottomRight: Radius.circular(10),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                              });
+                        }),
                   ],
                 ),
               ),
@@ -1032,7 +1117,9 @@ class _StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
 
 class SlideImage extends StatefulWidget {
   final List<String> favoriteHairImages;
-  const SlideImage({Key? key, required this.favoriteHairImages})
+  final screenWidth;
+  const SlideImage(
+      {Key? key, required this.favoriteHairImages, required this.screenWidth})
       : super(key: key);
 
   @override
@@ -1053,10 +1140,10 @@ class _SlideImageState extends State<SlideImage> {
           children: [
             Container(
               height: 200,
-              width: 220,
+              width: widget.screenWidth / 1.6,
               decoration: BoxDecoration(
                 color: Colors.grey,
-                borderRadius: BorderRadius.circular(20), // 角を丸くする
+                borderRadius: BorderRadius.circular(10), // 角を丸くする
                 image: DecorationImage(
                   image: NetworkImage(beforepath),
                   fit: BoxFit.cover,
@@ -1106,5 +1193,21 @@ class _SlideImageState extends State<SlideImage> {
         buildIndicator(),
       ]),
     );
+  }
+}
+
+Stream<String>? getShopLogoImageStream(String shopId) {
+  try {
+    print(shopId);
+    final aiu = FirebaseFirestore.instance
+        .collection('Shop')
+        .doc(shopId)
+        .snapshots()
+        .map((docSnapshot) => Shop.fromDocumentSnapshot(docSnapshot).logoImage);
+    print("せいこう");
+    return aiu;
+  } catch (e) {
+    print("しっぱい");
+    return null;
   }
 }

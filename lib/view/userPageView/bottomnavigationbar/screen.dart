@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/view/userPageView/account/account_page.dart';
 import 'package:memorys/view/userPageView/calendar.dart';
 import 'package:memorys/view/userPageView/home_page.dart';
@@ -34,7 +35,7 @@ class _ScreenState extends State<Screen> {
             ),
             activeIcon: Icon(
               Icons.home_outlined,
-              color: Colors.orange,
+              color: AppColors.thirdColor,
               size: 30,
             ),
             label: '',
@@ -46,7 +47,7 @@ class _ScreenState extends State<Screen> {
             ),
             activeIcon: Icon(
               Icons.search,
-              color: Colors.orange,
+              color: AppColors.thirdColor,
               size: 30,
             ),
             label: '',
@@ -58,7 +59,7 @@ class _ScreenState extends State<Screen> {
             ),
             activeIcon: Icon(
               Icons.favorite,
-              color: Colors.orange,
+              color: AppColors.thirdColor,
               size: 30,
             ),
             label: '',
@@ -70,7 +71,7 @@ class _ScreenState extends State<Screen> {
             ),
             activeIcon: Icon(
               Icons.perm_identity_outlined,
-              color: Colors.orange,
+              color: AppColors.thirdColor,
               size: 30,
             ),
             label: '',

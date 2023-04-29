@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/authentication.dart';
+import 'package:memorys/utils/firestore/shops.dart';
 
 class UserFirestore {
   static final _firestoreInstance = FirebaseFirestore.instance;
@@ -18,6 +19,7 @@ class UserFirestore {
       await users.doc(newAccount.id).set({
         'name': newAccount.name,
         'user_id': newAccount.userId,
+        'shop_id': '',
         'self_introduction': newAccount.selfIntroduction,
         'image_path': newAccount.imagepath,
         'created_time': Timestamp.now(),
@@ -41,34 +43,41 @@ class UserFirestore {
     }
   }
 
-  static Future<dynamic> getUser(String uid) async {
+  static Future<Account?> getUser(String uid) async {
     try {
       DocumentSnapshot documentSnapshot = await users.doc(uid).get();
       Map<String, dynamic>? data =
           documentSnapshot.data() as Map<String, dynamic>;
-      Account myAccount = Account(
+      final myAccount = Account(
         id: uid,
         name: data['name'],
         userId: data['user_id'],
+        shopId: data['shop_id'],
         selfIntroduction: data['self_introduction'],
         imagepath: data['image_path'],
         createdTime: data['created_time'],
         updatedTime: data['updated_time'],
         is_stylist: data['is_stylist'],
         is_owner: data['is_owner'],
+        menu_id: data['menu_id'] ?? [],
         favorite_image_0: data['favorite_image_0'],
         favorite_image_1: data['favorite_image_1'],
         favorite_image_2: data['favorite_image_2'],
         favorite_image_3: data['favorite_image_3'],
         favorite_image_4: data['favorite_image_4'],
       );
+
       Authentication.myAccount = myAccount;
       print('ユーザー取得完了');
       return myAccount;
     } on FirebaseException catch (e) {
-      print('ユーザー取得エラー');
+      print('ユーザー取得エラー: FirebaseException');
       print(e);
-      return false;
+      return null;
+    } catch (e) {
+      print('ユーザー取得エラー: その他の例外');
+      print(e);
+      return null;
     }
   }
 
@@ -86,6 +95,8 @@ class UserFirestore {
         'favorite_image_2': updateAccount.favorite_image_2,
         'favorite_image_3': updateAccount.favorite_image_3,
         'favorite_image_4': updateAccount.favorite_image_4,
+        'shop_id': updateAccount.shopId,
+        'menu_id': updateAccount.menu_id
       });
       print('ユーザー情報の更新完了');
       return true;
@@ -105,8 +116,7 @@ class UserFirestore {
         var doc = await users.doc(accountId).get();
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         print(data);
-        print(accountId);
-        Account postAccount = Account(
+        final postAccount = Account(
             id: accountId,
             name: data['name'],
             userId: data['user_id'],
@@ -133,13 +143,23 @@ class UserFirestore {
         var doc = await users.doc(accountId).get();
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         Account userAccount = Account(
-            id: accountId,
-            name: data['name'],
-            userId: data['user_id'],
-            imagepath: data['image_path'],
-            selfIntroduction: data['self_introduction'],
-            createdTime: data['created_time'],
-            updatedTime: data['updated_time']);
+          id: doc.id,
+          name: data['name'],
+          userId: data['user_id'],
+          shopId: data['shop_id'],
+          selfIntroduction: data['self_introduction'],
+          imagepath: data['image_path'],
+          createdTime: data['created_time'],
+          updatedTime: data['updated_time'],
+          is_stylist: data['is_stylist'],
+          menu_id: data['menu_id'] ?? [],
+          is_owner: data['is_owner'],
+          favorite_image_0: data['favorite_image_0'],
+          favorite_image_1: data['favorite_image_1'],
+          favorite_image_2: data['favorite_image_2'],
+          favorite_image_3: data['favorite_image_3'],
+          favorite_image_4: data['favorite_image_4'],
+        );
         accountList.add(userAccount);
       });
       print('投稿ユーザーの情報取得完了');
@@ -262,5 +282,119 @@ class UserFirestore {
       createdTime: doc['createdTime'],
       updatedTime: doc['updatedTime'],
     );
+  }
+
+  static Future<List<Map<String, dynamic>>> getMyStylistPosts(
+      Account userAccount) async {
+    try {
+      final FirebaseFirestore _db = FirebaseFirestore.instance;
+      final List<Map<String, dynamic>> myStylistPosts = [];
+      final querySnapshot = await _db
+          .collection('users')
+          .doc(userAccount.id)
+          .collection('my_stylist_post')
+          .get();
+
+      querySnapshot.docs.forEach((doc) {
+        myStylistPosts.add(doc.data());
+      });
+
+      return myStylistPosts;
+    } catch (e) {
+      print(e);
+      return [];
+    }
+  }
+
+  //ショップのカスタマー
+  static Stream<List<Account>> getCustomerList(Account myaccount) async* {
+    try {
+      List<String> customerInfomations =
+          await ShopFirestore.getCustomerInformationcustomerid(
+              myaccount.shopId);
+      if (customerInfomations.isEmpty) {
+        yield [];
+        return;
+      }
+      print(customerInfomations);
+
+      final fetchedDocuments = await getDocumentsWithIds(customerInfomations);
+
+      List<Account> accountList = [];
+
+      print(fetchedDocuments);
+
+      fetchedDocuments.forEach((doc) {
+        Map<String, dynamic>? data = doc.data();
+
+        Account userAccount = Account(
+          id: doc.id,
+          name: data!['name'],
+          userId: data['user_id'],
+          shopId: data['shop_id'],
+          selfIntroduction: data['self_introduction'],
+          imagepath: data['image_path'],
+          createdTime: data['created_time'],
+          updatedTime: data['updated_time'],
+          is_stylist: data['is_stylist'],
+          is_owner: data['is_owner'],
+          favorite_image_0: data['favorite_image_0'],
+          favorite_image_1: data['favorite_image_1'],
+          favorite_image_2: data['favorite_image_2'],
+          favorite_image_3: data['favorite_image_3'],
+          favorite_image_4: data['favorite_image_4'],
+        );
+        accountList.add(userAccount);
+      });
+
+      print(accountList);
+
+      yield accountList;
+    } catch (e) {
+      print(e);
+      print('エラー￥');
+    }
+  }
+
+  static Future<List<DocumentSnapshot<Map<String, dynamic>>>>
+      getDocumentsWithIds(List<String> ids) async {
+    print(ids);
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final customersCollection = _firestore.collection('users');
+    final List<DocumentSnapshot<Map<String, dynamic>>> documents = [];
+    for (final id in ids) {
+      if (id != null && id.isNotEmpty) {
+        final docSnapshot = await customersCollection.doc(id).get();
+        print('Document ID: $id');
+        print('docSnapshot.exists: ${docSnapshot.exists}');
+        print('docSnapshot.data(): ${docSnapshot.data()}');
+        if (docSnapshot.exists) {
+          documents.add(docSnapshot);
+        } else {}
+      } else {
+        print('Invalid or empty document ID: $id');
+      }
+    }
+    return documents;
+  }
+
+  static Future<List<String>> getImagePathsByIds(List<String> ids) async {
+    List<String> imagePaths = [];
+    print(ids);
+
+    for (String id in ids) {
+      try {
+        DocumentSnapshot documentSnapshot = await users.doc(id).get();
+        Map<String, dynamic> data =
+            documentSnapshot.data() as Map<String, dynamic>;
+        String imagePath = data['image_path'] ?? '';
+        imagePaths.add(imagePath);
+      } catch (e) {
+        print('画像パス取得エラー: $e');
+      }
+    }
+    print(imagePaths);
+
+    return imagePaths;
   }
 }

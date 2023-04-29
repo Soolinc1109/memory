@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:memorys/model/post.dart';
+import 'package:memorys/model/shop/carte.dart';
 
 class PostFirestore {
   static final _firestoreInstance = FirebaseFirestore.instance;
   static final CollectionReference posts =
       _firestoreInstance.collection('userposts');
+  static final CollectionReference cartes =
+      _firestoreInstance.collection('carte');
 
   // FirebaseFirestore.instance.collection('posts').doc('5XisJiwreAqMtOZKNExb').get();//全部書くとこうなる
 
@@ -30,6 +33,62 @@ class PostFirestore {
       return true;
     } on FirebaseException catch (e) {
       print('スタイリスト個人の投稿作成エラー');
+      return false;
+    }
+  }
+
+  static Future<String?> addCarte(Carte newPost) async {
+    try {
+//前回とったafter写真をprofile_imageにする
+//前回のdetailcarte更新日をlast_visit_timeにする
+      var result = await cartes.add({
+        'customer_name': newPost.customer_name,
+        'customer_katakana_name': newPost.customer_katakana_name,
+        'post_stylist_account_id': newPost.post_stylist_account_id,
+        'gender': newPost.gender,
+        'shop_id': newPost.shop_id,
+        'created_time': newPost.createdAt,
+        //後からbeforeafter登録時にマージ
+        'customer_id': newPost.customer_id,
+        //ここから決め内
+        'profile_image': '',
+        'last_visit_time': Timestamp.now(),
+        'save_count': 0,
+      });
+      print('カルテ投稿作成完了');
+      return result.id;
+    } on FirebaseException catch (e) {
+      print('カルテ投稿作成エラー');
+      return null;
+    }
+  }
+
+  static Future<bool> updateCarte(String carteId, String image) async {
+    try {
+      // Update the specified document with new data
+      await cartes.doc(carteId).update({
+        'profile_image': image, // Update with the new profile_image
+        'last_visit_time': Timestamp.now(),
+      });
+      print('カルテ投稿更新完了');
+      return true;
+    } on FirebaseException catch (e) {
+      print('カルテ投稿更新エラー');
+      return false;
+    }
+  }
+
+  static Future<bool> updateCarteCustomerId(
+      String carteId, String cusomerId) async {
+    try {
+      // Update the specified document with new data
+      await cartes.doc(carteId).update({
+        'customer_id': cusomerId, // Update with the new profile_image
+      });
+      print('カルテ投稿更新完了');
+      return true;
+    } on FirebaseException catch (e) {
+      print('カルテ投稿更新エラー');
       return false;
     }
   }

@@ -2,14 +2,20 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
+import 'package:memorys/model/shop/shop.dart';
 import 'package:memorys/model/shop/stylistpost.dart';
 import 'package:memorys/utils/authentication.dart';
 import 'package:memorys/utils/color.dart';
+import 'package:memorys/utils/firestore/shops.dart';
 import 'package:memorys/utils/firestore/stylistposts.dart';
+import 'package:memorys/view/shopview/stylist_shop_page.dart';
+import 'package:memorys/view/stylistView/user_list_page.dart';
 import 'package:memorys/view/userPageView/account/edit_account_page.dart';
 import 'package:memorys/view/startup/login_page.dart';
 import 'package:memorys/view/userPageView/before_after.dart';
-import 'package:memorys/view/userPageView/shop_page.dart';
+import 'package:memorys/view/userPageView/calendar.dart';
+import 'package:memorys/view/userPageView/create_user_post_page.dart';
+import 'package:memorys/view/userPageView/photo_view_page.dart';
 import 'package:memorys/view/userPageView/upload_favorite_hair_page.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -24,7 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: AppColors.thirdColor,
       ),
-      home: UserAccountPage(),
+      home: StylistAccountPage(),
 //      home: const NestedScrollViewSamplePage(),
     );
   }
@@ -41,38 +47,32 @@ const _tabs = <Widget>[
     Icons.content_cut,
     color: Colors.black,
   )),
+  Tab(
+      icon: Icon(
+    Icons.content_cut,
+    color: Colors.black,
+  )),
 ];
 
 /// Sticky TabBarを実現するページ
-class UserAccountPage extends StatefulWidget {
+class StylistAccountPage extends StatefulWidget {
   bool? isFollwing;
   // final Account? userInfo;
-  UserAccountPage({Key? key, this.isFollwing}) : super(key: key);
+  StylistAccountPage({Key? key, this.isFollwing}) : super(key: key);
   @override
-  State<UserAccountPage> createState() => _UserAccountPageState();
+  State<StylistAccountPage> createState() => _StylistAccountPageState();
 }
 
-class _UserAccountPageState extends State<UserAccountPage> {
+class _StylistAccountPageState extends State<StylistAccountPage> {
   Account myAccount = Authentication.myAccount!;
-  bool _isFirstBuild = true;
 
   List<StylistPost> _posts = [];
 
   static final _firestoreInstance = FirebaseFirestore.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_isFirstBuild) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          _isFirstBuild = false;
-        });
-      });
-    }
-  }
-
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     List<String>? favoriteimage = [
       myAccount.favorite_image_0!,
       myAccount.favorite_image_1!,
@@ -83,7 +83,6 @@ class _UserAccountPageState extends State<UserAccountPage> {
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: Drawer(
-        // ここでDrawerウィジェットをカスタマイズします。
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -107,6 +106,27 @@ class _UserAccountPageState extends State<UserAccountPage> {
                   setState(() {});
                 }
                 // ここでタップ時の処理を記述します。
+              },
+            ),
+            ListTile(
+              title: Text('ユーザー検索'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserListView()),
+                );
+              },
+            ),
+            ListTile(
+              title: Text('マイショップ'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => StylistShopPage(
+                            shopId: myAccount.shopId,
+                          )),
+                );
               },
             ),
             ListTile(
@@ -144,7 +164,19 @@ class _UserAccountPageState extends State<UserAccountPage> {
                       MaterialPageRoute(builder: (context) => LoginPage()));
                 }
               },
-            )
+            ),
+            ListTile(
+              title: Text('ガイド'),
+              onTap: () async {},
+            ),
+            ListTile(
+              title: Text('よくある質問'),
+              onTap: () async {},
+            ),
+            ListTile(
+              title: Text('プライバシーポリシー'),
+              onTap: () async {},
+            ),
           ],
         ),
       ),
@@ -154,13 +186,36 @@ class _UserAccountPageState extends State<UserAccountPage> {
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.black, size: 30),
           backgroundColor: Colors.white,
-          title: Text(
-            "",
-            style: TextStyle(
-                color: Color.fromARGB(255, 0, 0, 0),
-                fontSize: 25,
-                fontWeight: FontWeight.bold),
-          ),
+          title: StreamBuilder<Shop>(
+              stream: ShopFirestore.getShop(myAccount.shopId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError || !snapshot.hasData) {
+                  return Center(child: Text('データを取得できませんでした。'));
+                } else {
+                  final Shop shop = snapshot.data!;
+                  return Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => StylistShopPage(
+                                      shopId: myAccount.shopId,
+                                    )),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 21,
+                          foregroundImage: NetworkImage(shop.logoImage),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              }),
         ),
       ),
       body: DefaultTabController(
@@ -237,7 +292,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
                     tabs: <Widget>[
                       Tab(
                         child: Text(
-                          'Memory',
+                          'スナップ',
                           style: TextStyle(
                             color: Colors.black,
                           ),
@@ -245,7 +300,15 @@ class _UserAccountPageState extends State<UserAccountPage> {
                       ),
                       Tab(
                         child: Text(
-                          '予約状況',
+                          'カルテ',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      Tab(
+                        child: Text(
+                          'メニュー',
                           style: TextStyle(
                             color: Colors.black,
                           ),
@@ -262,11 +325,159 @@ class _UserAccountPageState extends State<UserAccountPage> {
               Expanded(
                 child: TabBarView(
                   children: <Widget>[
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('userposts')
+                          .where('post_account_id', isEqualTo: myAccount.id)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.all(18.0),
+                            child: Container(
+                              child: Center(
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      child: Text(
+                                        "スナップを投稿しよう！",
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    Container(
+                                        height: 160,
+                                        child: Image(
+                                          image: NetworkImage(
+                                              "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/undraw_add_friends_re_3xte.png?alt=media&token=f1055f15-a980-4658-ac7c-77bfd76462c2"),
+                                        )),
+                                    SizedBox(
+                                      height: 40,
+                                    ),
+                                    Container(
+                                      child: Text(
+                                        "スナップを投稿することで\nお客さんがあなたの投稿を発見し\n指名してもらえやすくなります",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    InkWell(
+                                        onTap: () async {
+                                          var result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const CreatePostPage()),
+                                          );
+                                          if (result == true) {
+                                            setState(() {});
+                                          }
+                                        },
+                                        child: Container(
+                                            height: 40,
+                                            width: screenWidth / 2.3,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      15), // 角丸を追加
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                colors: [
+                                                  AppColors
+                                                      .thirdColor, // グラデーションの開始色
+                                                  AppColors
+                                                      .secondaryColor, // グラデーションの終了色
+                                                ],
+                                              ),
+                                            ),
+                                            child: Center(
+                                              child: Text('スナップを投稿',
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        20, // フォントサイズを大きくする
+                                                    fontWeight: FontWeight
+                                                        .bold, // フォントを太くする
+                                                    color: Colors
+                                                        .white, // テキストの色を白にする
+                                                  )),
+                                            ))),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        if (snapshot.hasError) {
+                          return Center(child: Text('エラー: ${snapshot.error}'));
+                        }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        final imageUrls = snapshot.data!.docs
+                            .map((doc) => doc.get('image') as String)
+                            .toList();
+
+                        final textcontent = snapshot.data!.docs
+                            .map((doc) => doc.get('content') as String)
+                            .toList();
+
+                        final createdAt = snapshot.data!.docs
+                            .map((doc) => doc.get('created_time'))
+                            .toList();
+
+                        return GridView.builder(
+                          itemCount: imageUrls.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 1,
+                            crossAxisSpacing: 1,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            return InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  createPinchOutPageRoute(
+                                    nextScreen: PhotoViewPage(
+                                      imageUrls,
+                                      textcontent,
+                                      createdAt,
+                                      index,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: GridTile(
+                                child: Image.network(
+                                  imageUrls[index],
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          },
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                        );
+                      },
+                    ),
                     SingleChildScrollView(
                       child: Center(
                           child: Container(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                            EdgeInsets.symmetric(horizontal: 0, vertical: 15),
                         child: Column(
                           children: [
                             Row(
@@ -274,7 +485,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
                                 Padding(
                                   padding: const EdgeInsets.all(5.0),
                                   child: Text(
-                                    "あなたがなりたい髪型",
+                                    "お気に入りの投稿",
                                     style: TextStyle(
                                       fontSize: 17, // 文字サイズを大きくする (例: 24)
                                       fontWeight: FontWeight.bold, // 文字を太くする
@@ -321,13 +532,11 @@ class _UserAccountPageState extends State<UserAccountPage> {
                               height: 100,
                               width: 350,
                               child: StreamBuilder<QuerySnapshot>(
-                                  stream: _isFirstBuild
-                                      ? StylistPostFirestore.posts
-                                          .where('customer_id',
-                                              isEqualTo: myAccount.id)
-                                          // .orderBy('created_at', descending: true)
-                                          .snapshots()
-                                      : null,
+                                  stream: StylistPostFirestore.posts
+                                      .where('customer_id',
+                                          isEqualTo: myAccount.id)
+                                      // .orderBy('created_at', descending: true)
+                                      .snapshots(),
                                   builder: (context, postSnapshot) {
                                     if (postSnapshot.hasData &&
                                         !postSnapshot.data!.docs.isEmpty) {
@@ -782,7 +991,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ShopPage(
+                                      builder: (context) => StylistShopPage(
                                             shopId: myAccount.shopId,
                                           )),
                                 );
@@ -888,7 +1097,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ShopPage(
+                                      builder: (context) => StylistShopPage(
                                             shopId: myAccount.shopId,
                                           )),
                                 );

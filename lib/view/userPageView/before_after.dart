@@ -2,10 +2,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
-import 'package:memorys/model/stylistpost.dart';
+import 'package:memorys/model/shop/stylistpost.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/userPageView/stylists_page.dart';
+import 'package:memorys/view/stylistView/stylists_page.dart';
+import 'package:memorys/view/userPageView/shop_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class BeforeAfterDetail extends StatefulWidget {
@@ -91,7 +93,7 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
                             'Confidence -Men\'s HAIR 渋谷店',
                             style: TextStyle(
                               fontSize: 20,
-                              color: Colors.blue,
+                              color: AppColors.thirdColor,
                             ),
                           ),
                         ),
@@ -178,7 +180,7 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20.0),
-                          color: Colors.blue,
+                          color: AppColors.thirdColor,
                         ),
                         padding: EdgeInsets.symmetric(
                             horizontal: 20.0, vertical: 10.0),
@@ -211,65 +213,76 @@ class _BeforeAfterDetailState extends State<BeforeAfterDetail> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15, top: 8),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                bottomLeft: Radius.circular(10.0),
+                      InkWell(
+                        onTap: () {
+                          print(widget.stylistpost.shop_id);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ShopPage(
+                                    shopId: widget.stylistpost.shop_id)),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 15, top: 8),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10.0),
+                                  bottomLeft: Radius.circular(10.0),
+                                ),
+                                child: Image.network(
+                                  'https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/ph_main4.jpg?alt=media&token=66edf9cd-b15b-404f-a548-657ec655640f',
+                                  width: 120.0,
+                                  height: 80.0,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                              child: Image.network(
-                                'https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/ph_main4.jpg?alt=media&token=66edf9cd-b15b-404f-a548-657ec655640f',
-                                width: 120.0,
+                              Container(
+                                color: Colors.white,
                                 height: 80.0,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Container(
-                              color: Colors.white,
-                              height: 80.0,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10, top: 14.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Confidence -Men\'s HAIR 渋谷店',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14.0,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 10, top: 14.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Confidence -Men\'s HAIR 渋谷店',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14.0,
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(height: 5.0),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'このサロンについて',
-                                                style:
-                                                    TextStyle(fontSize: 13.0),
-                                              ),
-                                              Icon(
-                                                Icons.arrow_forward_ios,
-                                                size: 14.0,
-                                                color: Colors.black,
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                            SizedBox(height: 5.0),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  'このサロンについて',
+                                                  style:
+                                                      TextStyle(fontSize: 13.0),
+                                                ),
+                                                Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  size: 14.0,
+                                                  color: Colors.black,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],

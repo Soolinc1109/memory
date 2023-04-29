@@ -2,9 +2,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:memorys/model/account.dart';
+import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/posts.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/userPageView/stylists_page.dart';
+import 'package:memorys/view/stylistView/stylists_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class StyleDetail extends StatefulWidget {
@@ -77,7 +78,7 @@ class _StyleDetailState extends State<StyleDetail> {
                             'Confidence -Men\'s HAIR 渋谷店',
                             style: TextStyle(
                               fontSize: 20,
-                              color: Colors.blue,
+                              color: AppColors.thirdColor,
                             ),
                           ),
                         ),
@@ -164,7 +165,7 @@ class _StyleDetailState extends State<StyleDetail> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20.0),
-                          color: Colors.blue,
+                          color: AppColors.thirdColor,
                         ),
                         padding: EdgeInsets.symmetric(
                             horizontal: 20.0, vertical: 10.0),
