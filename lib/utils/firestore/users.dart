@@ -83,6 +83,9 @@ class UserFirestore {
 
   static Future<dynamic> updateUser(Account updateAccount) async {
     try {
+      if (updateAccount.id.isEmpty) {
+        return;
+      }
       await users.doc(updateAccount.id).update({
         'name': updateAccount.name,
         'user_id': updateAccount.userId,
@@ -112,22 +115,25 @@ class UserFirestore {
       List<String> accountIds) async {
     Map<String, Account> map = {};
     try {
-      await Future.forEach(accountIds, (String accountId) async {
+      for (String accountId in accountIds) {
+        if (accountId.isEmpty) {
+          continue;
+        }
         var doc = await users.doc(accountId).get();
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        print(data);
-        final postAccount = Account(
-            id: accountId,
-            name: data['name'],
-            userId: data['user_id'],
-            imagepath: data['image_path'],
-            selfIntroduction: data['self_introduction'],
-            createdTime: data['created_time'],
-            updatedTime: data['updated_time']);
-        map[accountId] = postAccount;
-      });
+        Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          final postAccount = Account(
+              id: accountId,
+              name: data['name'],
+              userId: data['user_id'],
+              imagepath: data['image_path'],
+              selfIntroduction: data['self_introduction'],
+              createdTime: data['created_time'],
+              updatedTime: data['updated_time']);
+          map[accountId] = postAccount;
+        }
+      }
       print('投稿ユーザーの情報取得完了');
-
       return map;
     } on FirebaseException catch (e) {
       print('投稿ユーザーの情報取得失敗: $e');

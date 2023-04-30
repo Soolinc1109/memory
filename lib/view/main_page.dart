@@ -66,51 +66,54 @@ class _MainPageState extends State<MainPage> {
     bool isStylist = false;
     bool isOwner = false;
 
-    return FutureBuilder(
-        future: UserFirestore.getUser(myAccount),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: FutureBuilder(
+          future: UserFirestore.getUser(myAccount),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Scaffold(
+                  backgroundColor: Colors.white,
+                  body: Center(
+                    child: SizedBox(
+                      width: 50.0, // インジケーターの幅
+                      height: 50.0, // インジケーターの高さ
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.grey[200], // インジケーターの背景色
+                        strokeWidth: 5, // インジケーターの線の太さ
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            Color.fromARGB(255, 234, 117, 255)), // インジケーターの色
+                      ),
+                    ),
+                  ) // データがない場合、インジケーターを表示
+
+                  ); // データがない場合、インジケーターを表示
+            }
+            final userData = snapshot.data as Account;
+            isStylist = userData.is_stylist;
+            isOwner = userData.is_owner;
+            List<Widget> pageList = getPageList(isStylist, isOwner);
+            if (myAccount == null) {
+              return const SizedBox();
+            }
             return Scaffold(
-                backgroundColor: Colors.white,
-                body: Center(
-                  child: SizedBox(
-                    width: 50.0, // インジケーターの幅
-                    height: 50.0, // インジケーターの高さ
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.grey[200], // インジケーターの背景色
-                      strokeWidth: 5, // インジケーターの線の太さ
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 234, 117, 255)), // インジケーターの色
+              backgroundColor: Colors.white,
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: AnimatedSwitcher(
+                      duration: Duration(milliseconds: 30),
+                      child: pageList[selectedIndex],
                     ),
                   ),
-                ) // データがない場合、インジケーターを表示
-
-                ); // データがない場合、インジケーターを表示
-          }
-          final userData = snapshot.data as Account;
-          isStylist = userData.is_stylist;
-          isOwner = userData.is_owner;
-          List<Widget> pageList = getPageList(isStylist, isOwner);
-          if (myAccount == null) {
-            return const SizedBox();
-          }
-          return Scaffold(
-            backgroundColor: Colors.white,
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: Duration(milliseconds: 30),
-                    child: pageList[selectedIndex],
+                  CustomBottomNavigationBar(
+                    onIconPresedCallback: onBottomIconPressed,
                   ),
-                ),
-                CustomBottomNavigationBar(
-                  onIconPresedCallback: onBottomIconPressed,
-                ),
-              ],
-            ),
-          );
-        });
+                ],
+              ),
+            );
+          }),
+    );
   }
 }

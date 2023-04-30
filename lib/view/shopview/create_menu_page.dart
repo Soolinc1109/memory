@@ -209,6 +209,10 @@ class _CreateMenuPageState extends State<CreateMenuPage> {
                 onPressed: loading
                     ? null
                     : () async {
+                        setState(() {
+                          loading = true;
+                        });
+
                         int price = int.parse(priceController.text.toString());
                         int convertedValue = _sliderValue.toInt();
                         if (descriptionController.text.isNotEmpty &&
@@ -226,30 +230,46 @@ class _CreateMenuPageState extends State<CreateMenuPage> {
                           final result = await ShopFirestore.addMenu(
                               myAccount.shopId, newPost);
                           if (result == true) {
-                            setState(() {
-                              loading = true;
-                            });
-                            setState(() {
-                              onpressed = true;
-                            });
-                            setState(() {
-                              HapticFeedback.heavyImpact();
-                              loading =
-                                  false; // Set loading back to false at the end of the onPressed callback
-                            });
+                            HapticFeedback.heavyImpact();
                             Navigator.pop(context, true);
+                          } else {
+                            setState(() {
+                              loading = false;
+                            });
+
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('エラーが発生しました。もう一度お試しください。'),
+                                  actions: <Widget>[
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('閉じる'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           }
                         } else {
+                          setState(() {
+                            loading = false;
+                          });
+
                           showDialog(
                             context: context,
-                            barrierDismissible: false, // ダイアログ外をタップしても閉じない
+                            barrierDismissible: false,
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text('テキスト、画像を埋めて下さい'),
                                 actions: <Widget>[
                                   ElevatedButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(); // ダイアログを閉じる
+                                      Navigator.of(context).pop();
                                     },
                                     child: Text('埋める'),
                                   ),
@@ -258,12 +278,6 @@ class _CreateMenuPageState extends State<CreateMenuPage> {
                             },
                           );
                         }
-                        setState(() {
-                          HapticFeedback.heavyImpact();
-                        });
-                        setState(() {
-                          onpressed = false;
-                        });
                       },
                 style: ElevatedButton.styleFrom(
                     shape: const RoundedRectangleBorder(
@@ -314,9 +328,13 @@ void handleKeyboardOverlay(BuildContext context, FocusNode focusNode) {
 
   focusNode.addListener(() {
     if (focusNode.hasFocus) {
-      Overlay.of(context)?.insert(closeButtonOverlay);
+      if (Overlay.of(context) != null) {
+        Overlay.of(context)!.insert(closeButtonOverlay);
+      }
     } else {
-      closeButtonOverlay.remove();
+      if (closeButtonOverlay.mounted) {
+        closeButtonOverlay.remove();
+      }
     }
   });
 }

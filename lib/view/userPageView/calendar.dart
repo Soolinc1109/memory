@@ -26,7 +26,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   bool _isFirstBuild = true;
 
-  Account myAccount = Authentication.myAccount!;
+  final myAccount = Authentication.myAccount!;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -214,17 +214,39 @@ class _CalendarScreenState extends State<CalendarScreen> {
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Container(
-                      child: Text(
-                        'あなたのmemoryを投稿しよう！',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0,
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        child: Text(
+                          "まだ投稿がありません",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                          height: 180,
+                          child: Image(
+                            image: NetworkImage(
+                                "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/lonely.png?alt=media&token=642b03bd-a4d6-4d9d-8230-789928967af4"),
+                          )),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        child: Text(
+                          "あなたの美容な毎日を投稿しましょう\n美容の記録を保存できます",
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   );
                 }
                 if (snapshot.hasError) {

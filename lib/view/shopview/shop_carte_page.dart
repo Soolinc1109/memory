@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:memorys/model/account.dart';
 import 'package:memorys/utils/firestore/users.dart';
-import 'package:memorys/view/stylistView/create_stylist_post_page.dart';
 
 class ShopCartePage extends StatefulWidget {
   @override

@@ -48,12 +48,16 @@ class ShopFirestore {
 
   static Stream<Shop> getShop(String shopId) async* {
     try {
+      if (shopId.isEmpty) {
+        print('エラー: shopIdが空です');
+        return;
+      }
       var shopReference = await shops.doc(shopId).snapshots();
 
       await for (var snapshot in shopReference) {
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
-        Shop shop = Shop(
+        final shop = Shop(
             id: shopId,
             shopPhone: data['shop_phone'],
             ownerId: data['owner_id'],
@@ -213,6 +217,10 @@ class ShopFirestore {
     List<String> customerIdList = [];
 
     try {
+      if (shopId.isEmpty) {
+        print('エラー: shopIdが空です');
+        return [];
+      }
       CollectionReference customerInfoRef =
           shops.doc(shopId).collection('customer_information');
       QuerySnapshot querySnapshot = await customerInfoRef.get();
@@ -296,8 +304,13 @@ class ShopFirestore {
   }
 
   static Stream<List<String>> getStaffIds(String shopId) async* {
+    if (shopId.isEmpty) {
+      print('エラー: shopIdが空です');
+      return;
+    }
+
     try {
-      var shopReference = await shops.doc(shopId).snapshots();
+      var shopReference = shops.doc(shopId).snapshots();
 
       await for (var snapshot in shopReference) {
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;

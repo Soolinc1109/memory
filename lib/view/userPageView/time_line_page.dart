@@ -234,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                         });
                   } else {
                     return Container(
-                      child: Text('まだカルテがありません'),
+                      child: Text(''),
                     );
                   }
                 }),
@@ -249,17 +249,39 @@ class _HomePageState extends State<HomePage> {
                   if (!postSnapshot.hasData ||
                       postSnapshot.data!.docs.isEmpty) {
                     print(postSnapshot);
-                    return Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Container(
-                        child: Text(
-                          'まだカルテがありません',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: 90,
+                        ),
+                        Container(
+                          child: Text(
+                            "まだカルテがありません",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
+                        SizedBox(
+                          height: 60,
+                        ),
+                        Container(
+                            height: 180,
+                            child: Image(
+                              image: NetworkImage(
+                                  "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/lonely.png?alt=media&token=642b03bd-a4d6-4d9d-8230-789928967af4"),
+                            )),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Container(
+                          child: Text(
+                            "美容室に行きあなたの写真を撮ってもらいましょう\nBeforeAfterがあなたの美容記録として残ります。",
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     );
                   }
                   List<String> postAccountIds = [];

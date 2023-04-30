@@ -44,78 +44,80 @@ class _ShopStylistPageState extends State<ShopStylistPage> {
           return accountIds.length == 0
               ? Scaffold(
                   body: Center(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 180,
-                        ),
-                        Container(
-                          child: Text(
-                            "お店の情報を登録しよう！",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 180,
+                          ),
+                          Container(
+                            child: Text(
+                              "お店の情報を登録しよう！",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Container(
-                            height: 200,
-                            child: Image(
-                              image: NetworkImage(
-                                  "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/undraw_add_friends_re_3xte.png?alt=media&token=f1055f15-a980-4658-ac7c-77bfd76462c2"),
-                            )),
-                        SizedBox(
-                          height: 40,
-                        ),
-                        Container(
-                          child: Text(
-                            "お店の情報を登録することで\n日々の来店数や、来客者の情報が視覚的に\n把握できるようになります",
-                            textAlign: TextAlign.center,
+                          SizedBox(
+                            height: 30,
                           ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        InkWell(
-                            onTap: () async {
-                              var result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const CreateShopPage()),
-                              );
-                              if (result == true) {
-                                setState(() {});
-                              }
-                            },
-                            child: Container(
-                                height: 40,
-                                width: screenWidth / 2.3,
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(15), // 角丸を追加
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      AppColors.thirdColor, // グラデーションの開始色
-                                      AppColors.secondaryColor, // グラデーションの終了色
-                                    ],
+                          Container(
+                              height: 200,
+                              child: Image(
+                                image: NetworkImage(
+                                    "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/undraw_add_friends_re_3xte.png?alt=media&token=f1055f15-a980-4658-ac7c-77bfd76462c2"),
+                              )),
+                          SizedBox(
+                            height: 40,
+                          ),
+                          Container(
+                            child: Text(
+                              "お店の情報を登録することで\n日々の来店数や、来客者の情報が視覚的に\n把握できるようになります",
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          InkWell(
+                              onTap: () async {
+                                var result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CreateShopPage()),
+                                );
+                                if (result == true) {
+                                  setState(() {});
+                                }
+                              },
+                              child: Container(
+                                  height: 40,
+                                  width: screenWidth / 2.3,
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(15), // 角丸を追加
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        AppColors.thirdColor, // グラデーションの開始色
+                                        AppColors.secondaryColor, // グラデーションの終了色
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                child: Center(
-                                  child: Text('お店を登録',
-                                      style: TextStyle(
-                                        fontSize: 20, // フォントサイズを大きくする
-                                        fontWeight:
-                                            FontWeight.bold, // フォントを太くする
-                                        color: Colors.white, // テキストの色を白にする
-                                      )),
-                                ))),
-                      ],
+                                  child: Center(
+                                    child: Text('お店を登録',
+                                        style: TextStyle(
+                                          fontSize: 20, // フォントサイズを大きくする
+                                          fontWeight:
+                                              FontWeight.bold, // フォントを太くする
+                                          color: Colors.white, // テキストの色を白にする
+                                        )),
+                                  ))),
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -684,9 +686,104 @@ class _ShopStylistPageState extends State<ShopStylistPage> {
                                               child: Text(
                                                   'Error: ${snapshot.error}'));
                                         } else {
-                                          return Center(
-                                              child:
-                                                  CircularProgressIndicator());
+                                          return Scaffold(
+                                            body: Center(
+                                              child: SingleChildScrollView(
+                                                child: Column(
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 180,
+                                                    ),
+                                                    Container(
+                                                      child: Text(
+                                                        "お店の情報を登録しよう！",
+                                                        style: TextStyle(
+                                                          fontSize: 24,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 30,
+                                                    ),
+                                                    Container(
+                                                        height: 200,
+                                                        child: Image(
+                                                          image: NetworkImage(
+                                                              "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/undraw_add_friends_re_3xte.png?alt=media&token=f1055f15-a980-4658-ac7c-77bfd76462c2"),
+                                                        )),
+                                                    SizedBox(
+                                                      height: 40,
+                                                    ),
+                                                    Container(
+                                                      child: Text(
+                                                        "お店の情報を登録することで\n日々の来店数や、来客者の情報が視覚的に\n把握できるようになります",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                    InkWell(
+                                                        onTap: () async {
+                                                          var result =
+                                                              await Navigator
+                                                                  .push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        const CreateShopPage()),
+                                                          );
+                                                          if (result == true) {
+                                                            setState(() {});
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                            height: 40,
+                                                            width: screenWidth /
+                                                                2.3,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15), // 角丸を追加
+                                                              gradient:
+                                                                  LinearGradient(
+                                                                begin: Alignment
+                                                                    .topCenter,
+                                                                end: Alignment
+                                                                    .bottomCenter,
+                                                                colors: [
+                                                                  AppColors
+                                                                      .thirdColor, // グラデーションの開始色
+                                                                  AppColors
+                                                                      .secondaryColor, // グラデーションの終了色
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            child: Center(
+                                                              child: Text(
+                                                                  'お店を登録',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        20, // フォントサイズを大きくする
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold, // フォントを太くする
+                                                                    color: Colors
+                                                                        .white, // テキストの色を白にする
+                                                                  )),
+                                                            ))),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
                                         }
                                       },
                                     ),
@@ -698,7 +795,88 @@ class _ShopStylistPageState extends State<ShopStylistPage> {
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
-                      return Center(child: CircularProgressIndicator());
+                      return Scaffold(
+                        body: Center(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 180,
+                                ),
+                                Container(
+                                  child: Text(
+                                    "お店の情報を登録しよう！",
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Container(
+                                    height: 200,
+                                    child: Image(
+                                      image: NetworkImage(
+                                          "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/undraw_add_friends_re_3xte.png?alt=media&token=f1055f15-a980-4658-ac7c-77bfd76462c2"),
+                                    )),
+                                SizedBox(
+                                  height: 40,
+                                ),
+                                Container(
+                                  child: Text(
+                                    "お店の情報を登録することで\n日々の来店数や、来客者の情報が視覚的に\n把握できるようになります",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                InkWell(
+                                    onTap: () async {
+                                      var result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const CreateShopPage()),
+                                      );
+                                      if (result == true) {
+                                        setState(() {});
+                                      }
+                                    },
+                                    child: Container(
+                                        height: 40,
+                                        width: screenWidth / 2.3,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                              15), // 角丸を追加
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              AppColors
+                                                  .thirdColor, // グラデーションの開始色
+                                              AppColors
+                                                  .secondaryColor, // グラデーションの終了色
+                                            ],
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Text('お店を登録',
+                                              style: TextStyle(
+                                                fontSize: 20, // フォントサイズを大きくする
+                                                fontWeight: FontWeight
+                                                    .bold, // フォントを太くする
+                                                color:
+                                                    Colors.white, // テキストの色を白にする
+                                              )),
+                                        ))),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
                     }
                   });
         });

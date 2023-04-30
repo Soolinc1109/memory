@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:memorys/model/account.dart';
@@ -8,7 +7,6 @@ import 'package:memorys/utils/color.dart';
 import 'package:memorys/utils/firestore/shops.dart';
 import 'package:memorys/utils/firestore/users.dart';
 import 'package:memorys/view/main_page.dart';
-import 'package:memorys/view/startup/signup_clear.dart';
 
 class CreateShopPage extends StatefulWidget {
   const CreateShopPage({Key? key}) : super(key: key);
@@ -22,8 +20,13 @@ class _CreateShopPageState extends State<CreateShopPage> {
   TextEditingController shopnameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
+  final focusNode = FocusNode();
+  final focusNode2 = FocusNode();
+
   @override
   Widget build(BuildContext context) {
+    handleKeyboardOverlay(context, focusNode);
+    handleKeyboardOverlay(context, focusNode2);
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -48,6 +51,7 @@ class _CreateShopPageState extends State<CreateShopPage> {
             Container(
               width: 300,
               child: TextField(
+                focusNode: focusNode,
                 controller: shopnameController,
                 decoration: InputDecoration(
                   hintText: 'お店の名前',
@@ -66,6 +70,7 @@ class _CreateShopPageState extends State<CreateShopPage> {
             Container(
                 width: 300,
                 child: TextField(
+                  focusNode: focusNode2,
                   controller: phoneController,
                   keyboardType: TextInputType.phone,
                   inputFormatters: <TextInputFormatter>[
@@ -134,4 +139,40 @@ class _CreateShopPageState extends State<CreateShopPage> {
       ),
     );
   }
+}
+
+OverlayEntry createCloseKeyboardButton(
+    BuildContext context, FocusNode focusNode) {
+  return OverlayEntry(
+    builder: (BuildContext context) {
+      return Positioned(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        right: 0,
+        child: Material(
+          // この行を追加
+          color: Colors.transparent, // この行を追加
+          child: IconButton(
+            icon: Icon(Icons.keyboard_hide),
+            onPressed: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+              // もしくは
+              // focusNode.unfocus();
+            },
+          ),
+        ), // この行を追加
+      );
+    },
+  );
+}
+
+void handleKeyboardOverlay(BuildContext context, FocusNode focusNode) {
+  final closeButtonOverlay = createCloseKeyboardButton(context, focusNode);
+
+  focusNode.addListener(() {
+    if (focusNode.hasFocus) {
+      Overlay.of(context)?.insert(closeButtonOverlay);
+    } else {
+      closeButtonOverlay.remove();
+    }
+  });
 }

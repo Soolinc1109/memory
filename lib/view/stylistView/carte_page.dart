@@ -99,39 +99,41 @@ class _CartePageListViewState extends State<CartePageListView> {
                       //streambilder→自分のカルテ情報取得
                       //futurebuilder→サブタスクに入りdetail情報を取得しstylistpostとdetail情報(カルテ)両方を表示
                       return userList.length == 0
-                          ? Column(
-                              children: [
-                                SizedBox(
-                                  height: 140,
-                                ),
-                                Container(
-                                  child: Text(
-                                    "まだお客様はいません",
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
+                          ? SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 140,
+                                  ),
+                                  Container(
+                                    child: Text(
+                                      "まだお客様はいません",
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Container(
-                                    height: 180,
-                                    child: Image(
-                                      image: NetworkImage(
-                                          "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/lonely.png?alt=media&token=642b03bd-a4d6-4d9d-8230-789928967af4"),
-                                    )),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Container(
-                                  child: Text(
-                                    "登録したスタイリストがお客さんの写真を撮り\nカルテを登録するとここに表示されます",
-                                    textAlign: TextAlign.center,
+                                  SizedBox(
+                                    height: 20,
                                   ),
-                                ),
-                              ],
+                                  Container(
+                                      height: 180,
+                                      child: Image(
+                                        image: NetworkImage(
+                                            "https://firebasestorage.googleapis.com/v0/b/memorys-dbc6f.appspot.com/o/lonely.png?alt=media&token=642b03bd-a4d6-4d9d-8230-789928967af4"),
+                                      )),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Container(
+                                    child: Text(
+                                      "登録したスタイリストがお客さんの写真を撮り\nカルテを登録するとここに表示されます",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             )
                           : ListView.builder(
                               itemCount: userList.length,
